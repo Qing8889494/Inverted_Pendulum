@@ -51,8 +51,17 @@
 extern	uint16_t adc_raw[ADC_CHANNEL_NUM];
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
-osThreadId LED_OnHandle;
 osThreadId Usart1_txHandle;
+osThreadId Usart1_rxHandle;
+osThreadId Usart2_txHandle;
+osThreadId Usart2_rxHandle;
+osThreadId Usart3_txHandle;
+osThreadId Usart3_rxHandle;
+osThreadId OLEDHandle;
+osThreadId Angle_sensorHandle;
+osThreadId Motor_runHandle;
+osThreadId Motor_sensorHandle;
+osThreadId BalanceHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
@@ -60,8 +69,17 @@ osThreadId Usart1_txHandle;
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void const * argument);
-void LED_Task(void const * argument);
-void usart1_tx(void const * argument);
+void usart1_tx_f(void const * argument);
+void usart1_rx_f(void const * argument);
+void usart2_tx_f(void const * argument);
+void usart2_rx_f(void const * argument);
+void usart3_tx_f(void const * argument);
+void usart3_rx_f(void const * argument);
+void oled_f(void const * argument);
+void angle_sensor_f(void const * argument);
+void motor_run_f(void const * argument);
+void motor_sensor_f(void const * argument);
+void balance_f(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -156,13 +174,49 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
-  /* definition and creation of LED_On */
-  osThreadDef(LED_On, LED_Task, osPriorityIdle, 0, 128);
-  LED_OnHandle = osThreadCreate(osThread(LED_On), NULL);
-
   /* definition and creation of Usart1_tx */
-  osThreadDef(Usart1_tx, usart1_tx, osPriorityIdle, 0, 128);
+  osThreadDef(Usart1_tx, usart1_tx_f, osPriorityIdle, 0, 128);
   Usart1_txHandle = osThreadCreate(osThread(Usart1_tx), NULL);
+
+  /* definition and creation of Usart1_rx */
+  osThreadDef(Usart1_rx, usart1_rx_f, osPriorityIdle, 0, 128);
+  Usart1_rxHandle = osThreadCreate(osThread(Usart1_rx), NULL);
+
+  /* definition and creation of Usart2_tx */
+  osThreadDef(Usart2_tx, usart2_tx_f, osPriorityIdle, 0, 128);
+  Usart2_txHandle = osThreadCreate(osThread(Usart2_tx), NULL);
+
+  /* definition and creation of Usart2_rx */
+  osThreadDef(Usart2_rx, usart2_rx_f, osPriorityIdle, 0, 128);
+  Usart2_rxHandle = osThreadCreate(osThread(Usart2_rx), NULL);
+
+  /* definition and creation of Usart3_tx */
+  osThreadDef(Usart3_tx, usart3_tx_f, osPriorityIdle, 0, 128);
+  Usart3_txHandle = osThreadCreate(osThread(Usart3_tx), NULL);
+
+  /* definition and creation of Usart3_rx */
+  osThreadDef(Usart3_rx, usart3_rx_f, osPriorityIdle, 0, 128);
+  Usart3_rxHandle = osThreadCreate(osThread(Usart3_rx), NULL);
+
+  /* definition and creation of OLED */
+  osThreadDef(OLED, oled_f, osPriorityIdle, 0, 128);
+  OLEDHandle = osThreadCreate(osThread(OLED), NULL);
+
+  /* definition and creation of Angle_sensor */
+  osThreadDef(Angle_sensor, angle_sensor_f, osPriorityIdle, 0, 128);
+  Angle_sensorHandle = osThreadCreate(osThread(Angle_sensor), NULL);
+
+  /* definition and creation of Motor_run */
+  osThreadDef(Motor_run, motor_run_f, osPriorityIdle, 0, 128);
+  Motor_runHandle = osThreadCreate(osThread(Motor_run), NULL);
+
+  /* definition and creation of Motor_sensor */
+  osThreadDef(Motor_sensor, motor_sensor_f, osPriorityIdle, 0, 128);
+  Motor_sensorHandle = osThreadCreate(osThread(Motor_sensor), NULL);
+
+  /* definition and creation of Balance */
+  osThreadDef(Balance, balance_f, osPriorityIdle, 0, 128);
+  BalanceHandle = osThreadCreate(osThread(Balance), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -188,81 +242,202 @@ void StartDefaultTask(void const * argument)
   /* USER CODE END StartDefaultTask */
 }
 
-/* USER CODE BEGIN Header_LED_Task */
-/**
-* @brief Function implementing the LED_On thread.
-* @param argument: Not used
-* @retval None
-*/
-
-static uint16_t pwm_duty = 0;
-static uint8_t pwm_dir = 1;  // 1: 增加, 0: 减少
-/* USER CODE END Header_LED_Task */
-void LED_Task(void const * argument)
-{
-  /* USER CODE BEGIN LED_Task */
-  /* Infinite loop */
-  for(;;)
-  {
-    //osDelay(1);
-	/* 1. 启动 TIM3 的 PWM 输出（CH1）*/
-  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
-
-  /* 2. 无限循环：呼吸灯效果 */
-  for(;;)
-  {
-    // 更新PWM占空比（Period = 2099）
-    __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, pwm_duty);
-
-    // 改变占空比值（步进10，可根据需要调整）
-    if(pwm_dir == 1) {
-      pwm_duty += 10;
-      if(pwm_duty >= 2100) {  // 超过最大值，反向
-        pwm_duty = 2100;
-        pwm_dir = 0;
-      }
-    } else {
-      pwm_duty -= 10;
-      if(pwm_duty <= 0) {    // 低于最小值，反向
-        pwm_duty = 0;
-        pwm_dir = 1;
-      }
-    }
-
-    // 延时20ms，控制呼吸快慢
-    osDelay(20);
-  }
-  }
-  /* USER CODE END LED_Task */
-}
-
-/* USER CODE BEGIN Header_usart1_tx */
+/* USER CODE BEGIN Header_usart1_tx_f */
 /**
 * @brief Function implementing the Usart1_tx thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_usart1_tx */
-void usart1_tx(void const * argument)
+/* USER CODE END Header_usart1_tx_f */
+void usart1_tx_f(void const * argument)
 {
-  /* USER CODE BEGIN usart1_tx */
+  /* USER CODE BEGIN usart1_tx_f */
   /* Infinite loop */
-	float angle1, angle2;
-	char	msg[128];
-	for(;;)
-	{
-		uint16_t	raw1 = adc_raw[0];
-		uint16_t	raw2 = adc_raw[1];
-		
-		angle1 = (float)raw1 * 360.0f/4095.0f;
-		angle2 = (float)raw2 * 360.0f/4095.0f;
-		
-		snprintf(msg, sizeof(msg), "ADC1= %5u (%.2f°)  ADC2= %5u (%.2f°)\r\n", raw1, angle1, raw2, angle2);
-		HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
-		
-		osDelay(500);
-	}
-  /* USER CODE END usart1_tx */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END usart1_tx_f */
+}
+
+/* USER CODE BEGIN Header_usart1_rx_f */
+/**
+* @brief Function implementing the Usart1_rx thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_usart1_rx_f */
+void usart1_rx_f(void const * argument)
+{
+  /* USER CODE BEGIN usart1_rx_f */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END usart1_rx_f */
+}
+
+/* USER CODE BEGIN Header_usart2_tx_f */
+/**
+* @brief Function implementing the Usart2_tx thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_usart2_tx_f */
+void usart2_tx_f(void const * argument)
+{
+  /* USER CODE BEGIN usart2_tx_f */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END usart2_tx_f */
+}
+
+/* USER CODE BEGIN Header_usart2_rx_f */
+/**
+* @brief Function implementing the Usart2_rx thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_usart2_rx_f */
+void usart2_rx_f(void const * argument)
+{
+  /* USER CODE BEGIN usart2_rx_f */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END usart2_rx_f */
+}
+
+/* USER CODE BEGIN Header_usart3_tx_f */
+/**
+* @brief Function implementing the Usart3_tx thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_usart3_tx_f */
+void usart3_tx_f(void const * argument)
+{
+  /* USER CODE BEGIN usart3_tx_f */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END usart3_tx_f */
+}
+
+/* USER CODE BEGIN Header_usart3_rx_f */
+/**
+* @brief Function implementing the Usart3_rx thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_usart3_rx_f */
+void usart3_rx_f(void const * argument)
+{
+  /* USER CODE BEGIN usart3_rx_f */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END usart3_rx_f */
+}
+
+/* USER CODE BEGIN Header_oled_f */
+/**
+* @brief Function implementing the OLED thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_oled_f */
+void oled_f(void const * argument)
+{
+  /* USER CODE BEGIN oled_f */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END oled_f */
+}
+
+/* USER CODE BEGIN Header_angle_sensor_f */
+/**
+* @brief Function implementing the Angle_sensor thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_angle_sensor_f */
+void angle_sensor_f(void const * argument)
+{
+  /* USER CODE BEGIN angle_sensor_f */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END angle_sensor_f */
+}
+
+/* USER CODE BEGIN Header_motor_run_f */
+/**
+* @brief Function implementing the Motor_run thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_motor_run_f */
+void motor_run_f(void const * argument)
+{
+  /* USER CODE BEGIN motor_run_f */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END motor_run_f */
+}
+
+/* USER CODE BEGIN Header_motor_sensor_f */
+/**
+* @brief Function implementing the Motor_sensor thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_motor_sensor_f */
+void motor_sensor_f(void const * argument)
+{
+  /* USER CODE BEGIN motor_sensor_f */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END motor_sensor_f */
+}
+
+/* USER CODE BEGIN Header_balance_f */
+/**
+* @brief Function implementing the Balance thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_balance_f */
+void balance_f(void const * argument)
+{
+  /* USER CODE BEGIN balance_f */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END balance_f */
 }
 
 /* Private application code --------------------------------------------------*/

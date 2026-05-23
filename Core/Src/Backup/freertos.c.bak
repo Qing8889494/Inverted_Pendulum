@@ -26,6 +26,9 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "tim.h"
+#include "usart.h"
+#include <stdio.h>
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +48,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-
+extern	uint16_t adc_raw[ADC_CHANNEL_NUM];
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId LED_OnHandle;
@@ -244,14 +247,21 @@ void usart1_tx(void const * argument)
 {
   /* USER CODE BEGIN usart1_tx */
   /* Infinite loop */
-   int cnt = 0;
-  char msg[64];
-  for(;;)
-  {
-    sprintf(msg, "Hello World! Count: %d\r\n", cnt++);
-    HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
-    osDelay(1000);
-  }
+	float angle1, angle2;
+	char	msg[128];
+	for(;;)
+	{
+		uint16_t	raw1 = adc_raw[0];
+		uint16_t	raw2 = adc_raw[1];
+		
+		angle1 = (float)raw1 * 360.0f/4095.0f;
+		angle2 = (float)raw2 * 360.0f/4095.0f;
+		
+		snprintf(msg, sizeof(msg), "ADC1= %5u (%.2f°)  ADC2= %5u (%.2f°)\r\n", raw1, angle1, raw2, angle2);
+		HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+		
+		osDelay(500);
+	}
   /* USER CODE END usart1_tx */
 }
 

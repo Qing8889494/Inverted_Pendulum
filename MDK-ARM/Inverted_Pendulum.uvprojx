@@ -654,6 +654,31 @@
               <FileType>1</FileType>
               <FilePath>../Core/Src/stm32f4xx_hal_timebase_tim.c</FilePath>
             </File>
+            <File>
+              <FileName>angle_sensor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\angle_sensor.c</FilePath>
+            </File>
+            <File>
+              <FileName>balance.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\balance.c</FilePath>
+            </File>
+            <File>
+              <FileName>motor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\motor.c</FilePath>
+            </File>
+            <File>
+              <FileName>my_oled.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\my_oled.c</FilePath>
+            </File>
+            <File>
+              <FileName>my_usart.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Core\Src\my_usart.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -1156,5 +1181,14 @@
     </components>
     <files/>
   </RTE>
+
+  <LayerInfo>
+    <Layers>
+      <Layer>
+        <LayName>Inverted_Pendulum</LayName>
+        <LayPrjMark>1</LayPrjMark>
+      </Layer>
+    </Layers>
+  </LayerInfo>
 
 </Project>
