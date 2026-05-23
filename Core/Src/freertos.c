@@ -55,7 +55,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-extern	uint16_t adc_raw[ADC_CHANNEL_NUM];
+//extern	uint16_t adc_raw[ADC_CHANNEL_NUM];
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId Usart1_txHandle;
@@ -174,6 +174,11 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_TIMERS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
+	
+	xSensorQueue = xQueueCreate(1, sizeof(Sensor_Data_Typedef));
+	if(xSensorQueue == NULL) {
+		Error_Handler();
+	}
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
 
@@ -183,48 +188,48 @@ void MX_FREERTOS_Init(void) {
 //  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of Usart1_tx */
-  osThreadDef(Usart1_tx, usart1_tx_f, osPriorityIdle, 0, 128);
+  osThreadDef(Usart1_tx, usart1_tx_f, osPriorityIdle, 0, 256);
   Usart1_txHandle = osThreadCreate(osThread(Usart1_tx), NULL);
 
   /* definition and creation of Usart1_rx */
-  osThreadDef(Usart1_rx, usart1_rx_f, osPriorityIdle, 0, 128);
-  Usart1_rxHandle = osThreadCreate(osThread(Usart1_rx), NULL);
+//  osThreadDef(Usart1_rx, usart1_rx_f, osPriorityIdle, 0, 128);
+//  Usart1_rxHandle = osThreadCreate(osThread(Usart1_rx), NULL);
 
   /* definition and creation of Usart2_tx */
-  osThreadDef(Usart2_tx, usart2_tx_f, osPriorityIdle, 0, 128);
-  Usart2_txHandle = osThreadCreate(osThread(Usart2_tx), NULL);
+//  osThreadDef(Usart2_tx, usart2_tx_f, osPriorityIdle, 0, 128);
+//  Usart2_txHandle = osThreadCreate(osThread(Usart2_tx), NULL);
 
   /* definition and creation of Usart2_rx */
-  osThreadDef(Usart2_rx, usart2_rx_f, osPriorityIdle, 0, 128);
-  Usart2_rxHandle = osThreadCreate(osThread(Usart2_rx), NULL);
+//  osThreadDef(Usart2_rx, usart2_rx_f, osPriorityIdle, 0, 128);
+//  Usart2_rxHandle = osThreadCreate(osThread(Usart2_rx), NULL);
 
   /* definition and creation of Usart3_tx */
-  osThreadDef(Usart3_tx, usart3_tx_f, osPriorityIdle, 0, 128);
-  Usart3_txHandle = osThreadCreate(osThread(Usart3_tx), NULL);
+//  osThreadDef(Usart3_tx, usart3_tx_f, osPriorityIdle, 0, 128);
+//  Usart3_txHandle = osThreadCreate(osThread(Usart3_tx), NULL);
 
   /* definition and creation of Usart3_rx */
-  osThreadDef(Usart3_rx, usart3_rx_f, osPriorityIdle, 0, 128);
-  Usart3_rxHandle = osThreadCreate(osThread(Usart3_rx), NULL);
+//  osThreadDef(Usart3_rx, usart3_rx_f, osPriorityIdle, 0, 128);
+//  Usart3_rxHandle = osThreadCreate(osThread(Usart3_rx), NULL);
 
   /* definition and creation of OLED */
-  osThreadDef(OLED, oled_f, osPriorityIdle, 0, 128);
-  OLEDHandle = osThreadCreate(osThread(OLED), NULL);
+//  osThreadDef(OLED, oled_f, osPriorityIdle, 0, 128);
+//  OLEDHandle = osThreadCreate(osThread(OLED), NULL);
 
   /* definition and creation of Angle_sensor */
-  osThreadDef(Angle_sensor, angle_sensor_f, osPriorityIdle, 0, 128);
+  osThreadDef(Angle_sensor, angle_sensor_f, osPriorityIdle, 0, 1024);
   Angle_sensorHandle = osThreadCreate(osThread(Angle_sensor), NULL);
 
   /* definition and creation of Motor_run */
-  osThreadDef(Motor_run, motor_run_f, osPriorityIdle, 0, 128);
-  Motor_runHandle = osThreadCreate(osThread(Motor_run), NULL);
+//  osThreadDef(Motor_run, motor_run_f, osPriorityIdle, 0, 128);
+//  Motor_runHandle = osThreadCreate(osThread(Motor_run), NULL);
 
   /* definition and creation of Motor_sensor */
-  osThreadDef(Motor_sensor, motor_sensor_f, osPriorityIdle, 0, 128);
-  Motor_sensorHandle = osThreadCreate(osThread(Motor_sensor), NULL);
+//  osThreadDef(Motor_sensor, motor_sensor_f, osPriorityIdle, 0, 128);
+//  Motor_sensorHandle = osThreadCreate(osThread(Motor_sensor), NULL);
 
   /* definition and creation of Balance */
-  osThreadDef(Balance, balance_f, osPriorityIdle, 0, 128);
-  BalanceHandle = osThreadCreate(osThread(Balance), NULL);
+//  osThreadDef(Balance, balance_f, osPriorityIdle, 0, 128);
+//  BalanceHandle = osThreadCreate(osThread(Balance), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
