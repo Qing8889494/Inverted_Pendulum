@@ -1,0 +1,271 @@
+/* USER CODE BEGIN Header */
+/**
+  ******************************************************************************
+  * File Name          : freertos.c
+  * Description        : Code for freertos applications
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2026 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
+
+/* Includes ------------------------------------------------------------------*/
+#include "FreeRTOS.h"
+#include "task.h"
+#include "main.h"
+#include "cmsis_os.h"
+
+/* Private includes ----------------------------------------------------------*/
+/* USER CODE BEGIN Includes */
+#include "tim.h"
+#include "usart.h"
+#include <stdio.h>
+#include <string.h>
+/* USER CODE END Includes */
+
+/* Private typedef -----------------------------------------------------------*/
+/* USER CODE BEGIN PTD */
+
+/* USER CODE END PTD */
+
+/* Private define ------------------------------------------------------------*/
+/* USER CODE BEGIN PD */
+
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
+/* USER CODE END PM */
+
+/* Private variables ---------------------------------------------------------*/
+/* USER CODE BEGIN Variables */
+extern	uint16_t adc_raw[ADC_CHANNEL_NUM];
+/* USER CODE END Variables */
+osThreadId defaultTaskHandle;
+osThreadId LED_OnHandle;
+osThreadId Usart1_txHandle;
+
+/* Private function prototypes -----------------------------------------------*/
+/* USER CODE BEGIN FunctionPrototypes */
+
+/* USER CODE END FunctionPrototypes */
+
+void StartDefaultTask(void const * argument);
+void LED_Task(void const * argument);
+void usart1_tx(void const * argument);
+
+void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
+
+/* GetIdleTaskMemory prototype (linked to static allocation support) */
+void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize );
+
+/* Hook prototypes */
+void configureTimerForRunTimeStats(void);
+unsigned long getRunTimeCounterValue(void);
+void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName);
+void vApplicationMallocFailedHook(void);
+
+/* USER CODE BEGIN 1 */
+/* Functions needed when configGENERATE_RUN_TIME_STATS is on */
+__weak void configureTimerForRunTimeStats(void)
+{
+
+}
+
+__weak unsigned long getRunTimeCounterValue(void)
+{
+return 0;
+}
+/* USER CODE END 1 */
+
+/* USER CODE BEGIN 4 */
+__weak void vApplicationStackOverflowHook(xTaskHandle xTask, signed char *pcTaskName)
+{
+   /* Run time stack overflow checking is performed if
+   configCHECK_FOR_STACK_OVERFLOW is defined to 1 or 2. This hook function is
+   called if a stack overflow is detected. */
+}
+/* USER CODE END 4 */
+
+/* USER CODE BEGIN 5 */
+__weak void vApplicationMallocFailedHook(void)
+{
+   /* vApplicationMallocFailedHook() will only be called if
+   configUSE_MALLOC_FAILED_HOOK is set to 1 in FreeRTOSConfig.h. It is a hook
+   function that will get called if a call to pvPortMalloc() fails.
+   pvPortMalloc() is called internally by the kernel whenever a task, queue,
+   timer or semaphore is created. It is also called by various parts of the
+   demo application. If heap_1.c or heap_2.c are used, then the size of the
+   heap available to pvPortMalloc() is defined by configTOTAL_HEAP_SIZE in
+   FreeRTOSConfig.h, and the xPortGetFreeHeapSize() API function can be used
+   to query the size of free heap space that remains (although it does not
+   provide information on how the remaining heap might be fragmented). */
+}
+/* USER CODE END 5 */
+
+/* USER CODE BEGIN GET_IDLE_TASK_MEMORY */
+static StaticTask_t xIdleTaskTCBBuffer;
+static StackType_t xIdleStack[configMINIMAL_STACK_SIZE];
+
+void vApplicationGetIdleTaskMemory( StaticTask_t **ppxIdleTaskTCBBuffer, StackType_t **ppxIdleTaskStackBuffer, uint32_t *pulIdleTaskStackSize )
+{
+  *ppxIdleTaskTCBBuffer = &xIdleTaskTCBBuffer;
+  *ppxIdleTaskStackBuffer = &xIdleStack[0];
+  *pulIdleTaskStackSize = configMINIMAL_STACK_SIZE;
+  /* place for user code */
+}
+/* USER CODE END GET_IDLE_TASK_MEMORY */
+
+/**
+  * @brief  FreeRTOS initialization
+  * @param  None
+  * @retval None
+  */
+void MX_FREERTOS_Init(void) {
+  /* USER CODE BEGIN Init */
+
+  /* USER CODE END Init */
+
+  /* USER CODE BEGIN RTOS_MUTEX */
+  /* add mutexes, ... */
+  /* USER CODE END RTOS_MUTEX */
+
+  /* USER CODE BEGIN RTOS_SEMAPHORES */
+  /* add semaphores, ... */
+  /* USER CODE END RTOS_SEMAPHORES */
+
+  /* USER CODE BEGIN RTOS_TIMERS */
+  /* start timers, add new ones, ... */
+  /* USER CODE END RTOS_TIMERS */
+
+  /* USER CODE BEGIN RTOS_QUEUES */
+  /* add queues, ... */
+  /* USER CODE END RTOS_QUEUES */
+
+  /* Create the thread(s) */
+  /* definition and creation of defaultTask */
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+
+  /* definition and creation of LED_On */
+  osThreadDef(LED_On, LED_Task, osPriorityIdle, 0, 128);
+  LED_OnHandle = osThreadCreate(osThread(LED_On), NULL);
+
+  /* definition and creation of Usart1_tx */
+  osThreadDef(Usart1_tx, usart1_tx, osPriorityIdle, 0, 128);
+  Usart1_txHandle = osThreadCreate(osThread(Usart1_tx), NULL);
+
+  /* USER CODE BEGIN RTOS_THREADS */
+  /* add threads, ... */
+  /* USER CODE END RTOS_THREADS */
+
+}
+
+/* USER CODE BEGIN Header_StartDefaultTask */
+/**
+  * @brief  Function implementing the defaultTask thread.
+  * @param  argument: Not used
+  * @retval None
+  */
+/* USER CODE END Header_StartDefaultTask */
+void StartDefaultTask(void const * argument)
+{
+  /* USER CODE BEGIN StartDefaultTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END StartDefaultTask */
+}
+
+/* USER CODE BEGIN Header_LED_Task */
+/**
+* @brief Function implementing the LED_On thread.
+* @param argument: Not used
+* @retval None
+*/
+
+static uint16_t pwm_duty = 0;
+static uint8_t pwm_dir = 1;  // 1: 增加, 0: 减少
+/* USER CODE END Header_LED_Task */
+void LED_Task(void const * argument)
+{
+  /* USER CODE BEGIN LED_Task */
+  /* Infinite loop */
+  for(;;)
+  {
+    //osDelay(1);
+	/* 1. 启动 TIM3 的 PWM 输出（CH1）*/
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+
+  /* 2. 无限循环：呼吸灯效果 */
+  for(;;)
+  {
+    // 更新PWM占空比（Period = 2099）
+    __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, pwm_duty);
+
+    // 改变占空比值（步进10，可根据需要调整）
+    if(pwm_dir == 1) {
+      pwm_duty += 10;
+      if(pwm_duty >= 2100) {  // 超过最大值，反向
+        pwm_duty = 2100;
+        pwm_dir = 0;
+      }
+    } else {
+      pwm_duty -= 10;
+      if(pwm_duty <= 0) {    // 低于最小值，反向
+        pwm_duty = 0;
+        pwm_dir = 1;
+      }
+    }
+
+    // 延时20ms，控制呼吸快慢
+    osDelay(20);
+  }
+  }
+  /* USER CODE END LED_Task */
+}
+
+/* USER CODE BEGIN Header_usart1_tx */
+/**
+* @brief Function implementing the Usart1_tx thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_usart1_tx */
+void usart1_tx(void const * argument)
+{
+  /* USER CODE BEGIN usart1_tx */
+  /* Infinite loop */
+	float angle1, angle2;
+	char	msg[128];
+	for(;;)
+	{
+		uint16_t	raw1 = adc_raw[0];
+		uint16_t	raw2 = adc_raw[1];
+		
+		angle1 = (float)raw1 * 360.0f/4095.0f;
+		angle2 = (float)raw2 * 360.0f/4095.0f;
+		
+		snprintf(msg, sizeof(msg), "ADC1= %5u (%.2f°)  ADC2= %5u (%.2f°)\r\n", raw1, angle1, raw2, angle2);
+		HAL_UART_Transmit(&huart1, (uint8_t*)msg, strlen(msg), HAL_MAX_DELAY);
+		
+		osDelay(500);
+	}
+  /* USER CODE END usart1_tx */
+}
+
+/* Private application code --------------------------------------------------*/
+/* USER CODE BEGIN Application */
+
+/* USER CODE END Application */
