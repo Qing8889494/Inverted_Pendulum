@@ -17,6 +17,7 @@
 "inverted_pendulum\my_oled.o"
 "inverted_pendulum\my_usart.o"
 "inverted_pendulum\led.o"
+"inverted_pendulum\oled.o"
 "inverted_pendulum\stm32f4xx_hal_tim.o"
 "inverted_pendulum\stm32f4xx_hal_tim_ex.o"
 "inverted_pendulum\stm32f4xx_hal_adc.o"

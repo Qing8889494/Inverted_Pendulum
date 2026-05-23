@@ -2,8 +2,8 @@ inverted_pendulum\angle_sensor.o: ..\Core\Src\angle_sensor.c
 inverted_pendulum\angle_sensor.o: ../Core/Inc/angle_sensor.h
 inverted_pendulum\angle_sensor.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 inverted_pendulum\angle_sensor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-inverted_pendulum\angle_sensor.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
-inverted_pendulum\angle_sensor.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+inverted_pendulum\angle_sensor.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
+inverted_pendulum\angle_sensor.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 inverted_pendulum\angle_sensor.o: ../Core/Inc/FreeRTOSConfig.h
 inverted_pendulum\angle_sensor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 inverted_pendulum\angle_sensor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h

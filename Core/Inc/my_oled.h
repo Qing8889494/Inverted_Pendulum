@@ -23,5 +23,6 @@
 //任务函数声明
 void oled_f(void const * argument);
 //其它函数声明
+void oled_show(const char *label, float value);
 
 #endif
