@@ -1,9 +1,9 @@
 inverted_pendulum\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/tasks.c
-inverted_pendulum\tasks.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
-inverted_pendulum\tasks.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
+inverted_pendulum\tasks.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+inverted_pendulum\tasks.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 inverted_pendulum\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-inverted_pendulum\tasks.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
-inverted_pendulum\tasks.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+inverted_pendulum\tasks.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+inverted_pendulum\tasks.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 inverted_pendulum\tasks.o: ../Core/Inc/FreeRTOSConfig.h
 inverted_pendulum\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 inverted_pendulum\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
@@ -14,4 +14,4 @@ inverted_pendulum\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/ta
 inverted_pendulum\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/list.h
 inverted_pendulum\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h
 inverted_pendulum\tasks.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/stack_macros.h
-inverted_pendulum\tasks.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
+inverted_pendulum\tasks.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
