@@ -212,7 +212,7 @@ void MX_FREERTOS_Init(void) {
 //  Usart3_rxHandle = osThreadCreate(osThread(Usart3_rx), NULL);
 
   /* definition and creation of OLED */
-  osThreadDef(OLED, oled_f, osPriorityIdle, 0, 128);
+  osThreadDef(OLED, oled_f, osPriorityNormal, 0, 256);
   OLEDHandle = osThreadCreate(osThread(OLED), NULL);
 
   /* definition and creation of Angle_sensor */

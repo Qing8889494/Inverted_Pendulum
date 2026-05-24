@@ -20,6 +20,7 @@
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __I2C_H__
 #define __I2C_H__
+// 示例（标准正确地址）
 
 #ifdef __cplusplus
 extern "C" {

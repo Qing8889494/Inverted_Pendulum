@@ -7,7 +7,7 @@ this library is a 0.91'OLED(ssd1306) driver
 #include "oled.h"
 #include "oledfont.h"
 #include "i2c.h"
-
+#define OLED_ADDR    0x78  
 /**
  * 0.91 "OLED initialization control word
  * Each control word can change the display properties of the screen according to the manufacturer's Datasheet
@@ -37,11 +37,11 @@ uint8_t initcmd1[] = {
 **/
 void OLED_Write_cmd(uint8_t cmd)
 {
-	HAL_I2C_Mem_Write(&hi2c1, 0x78, 0x00, I2C_MEMADD_SIZE_8BIT, &cmd, 1, 0x100);
+	HAL_I2C_Mem_Write(&hi2c1, OLED_ADDR, 0x00, I2C_MEMADD_SIZE_8BIT, &cmd, 1, 0x100);
 }
 void OLED_Write_data(uint8_t data)
 {
-	HAL_I2C_Mem_Write(&hi2c1, 0x78, 0x40, I2C_MEMADD_SIZE_8BIT, &data, 1, 0x100);
+	HAL_I2C_Mem_Write(&hi2c1,OLED_ADDR, 0x40, I2C_MEMADD_SIZE_8BIT, &data, 1, 0x100);
 }
 
 

@@ -1,9 +1,9 @@
 inverted_pendulum\cmsis_os.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.c
-inverted_pendulum\cmsis_os.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\string.h
+inverted_pendulum\cmsis_os.o: F:\keil5\ARM\ARMCC\Bin\..\include\string.h
 inverted_pendulum\cmsis_os.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 inverted_pendulum\cmsis_os.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-inverted_pendulum\cmsis_os.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stddef.h
-inverted_pendulum\cmsis_os.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stdint.h
+inverted_pendulum\cmsis_os.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
+inverted_pendulum\cmsis_os.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 inverted_pendulum\cmsis_os.o: ../Core/Inc/FreeRTOSConfig.h
 inverted_pendulum\cmsis_os.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 inverted_pendulum\cmsis_os.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h

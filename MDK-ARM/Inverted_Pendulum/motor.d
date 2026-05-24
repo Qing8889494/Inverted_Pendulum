@@ -2,8 +2,8 @@ inverted_pendulum\motor.o: ..\Core\Src\motor.c
 inverted_pendulum\motor.o: ../Core/Inc/motor.h
 inverted_pendulum\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 inverted_pendulum\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-inverted_pendulum\motor.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stddef.h
-inverted_pendulum\motor.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stdint.h
+inverted_pendulum\motor.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
+inverted_pendulum\motor.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 inverted_pendulum\motor.o: ../Core/Inc/FreeRTOSConfig.h
 inverted_pendulum\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 inverted_pendulum\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
