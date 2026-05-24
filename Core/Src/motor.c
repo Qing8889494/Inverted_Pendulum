@@ -126,12 +126,9 @@ void motor_brake(void)
   __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, PWM_PERIOD);
   __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, PWM_PERIOD);
 }
-<<<<<<< HEAD
 
 //获取编码器计数值(32位)
 int32_t motor_get_encoder()
 {
   return (int32_t)__HAL_TIM_GET_COUNTER(&htim2);
 }
-=======
->>>>>>> 2ca27324fb4a7d12720f432ffac92761fa073c4c
