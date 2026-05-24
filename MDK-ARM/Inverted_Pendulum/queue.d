@@ -1,9 +1,17 @@
 inverted_pendulum\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/queue.c
+<<<<<<< HEAD
 inverted_pendulum\queue.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 inverted_pendulum\queue.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 inverted_pendulum\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
 inverted_pendulum\queue.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
 inverted_pendulum\queue.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+=======
+inverted_pendulum\queue.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stdlib.h
+inverted_pendulum\queue.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\string.h
+inverted_pendulum\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+inverted_pendulum\queue.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stddef.h
+inverted_pendulum\queue.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stdint.h
+>>>>>>> b79ec7b7f570b72b5f6d3a6e5afc08623f8a238f
 inverted_pendulum\queue.o: ../Core/Inc/FreeRTOSConfig.h
 inverted_pendulum\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 inverted_pendulum\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h

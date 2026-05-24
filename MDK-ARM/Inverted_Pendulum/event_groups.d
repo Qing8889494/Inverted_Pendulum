@@ -1,8 +1,15 @@
 inverted_pendulum\event_groups.o: ../Middlewares/Third_Party/FreeRTOS/Source/event_groups.c
+<<<<<<< HEAD
 inverted_pendulum\event_groups.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 inverted_pendulum\event_groups.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
 inverted_pendulum\event_groups.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
 inverted_pendulum\event_groups.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+=======
+inverted_pendulum\event_groups.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stdlib.h
+inverted_pendulum\event_groups.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+inverted_pendulum\event_groups.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stddef.h
+inverted_pendulum\event_groups.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stdint.h
+>>>>>>> b79ec7b7f570b72b5f6d3a6e5afc08623f8a238f
 inverted_pendulum\event_groups.o: ../Core/Inc/FreeRTOSConfig.h
 inverted_pendulum\event_groups.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 inverted_pendulum\event_groups.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
