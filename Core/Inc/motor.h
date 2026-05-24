@@ -20,6 +20,8 @@
 #ifndef __MOTOR_H
 #define __MOTOR_H
 
+#define PWM_PERIOD	2099		//TIM3的自动重载值
+
 //任务函数声明
 void motor_run_f(void const * argument);
 void motor_sensor_f(void const * argument);
