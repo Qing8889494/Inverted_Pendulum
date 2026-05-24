@@ -1,7 +1,7 @@
 inverted_pendulum\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/croutine.c
 inverted_pendulum\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-inverted_pendulum\croutine.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
-inverted_pendulum\croutine.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+inverted_pendulum\croutine.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
+inverted_pendulum\croutine.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
 inverted_pendulum\croutine.o: ../Core/Inc/FreeRTOSConfig.h
 inverted_pendulum\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 inverted_pendulum\croutine.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h

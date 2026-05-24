@@ -25,6 +25,7 @@
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
+#include "led.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -206,6 +207,10 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
+	    LED_On(LED1_Pin); // 替换成你的板载LED引脚
+		HAL_Delay(200);
+		LED_Toggle(LED1_Pin); // 替换成你的板载LED引脚
+		HAL_Delay(200);
   }
   /* USER CODE END Error_Handler_Debug */
 }

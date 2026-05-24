@@ -29,6 +29,13 @@
 #include "usart.h"
 #include <stdio.h>
 #include <string.h>
+/*新增头文件*/
+#include "angle_sensor.h"
+#include "balance.h"
+#include "motor.h"
+#include "my_oled.h"
+#include "my_usart.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -48,7 +55,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-extern	uint16_t adc_raw[ADC_CHANNEL_NUM];
+//extern	uint16_t adc_raw[ADC_CHANNEL_NUM];
 /* USER CODE END Variables */
 osThreadId defaultTaskHandle;
 osThreadId Usart1_txHandle;
@@ -68,18 +75,19 @@ osThreadId BalanceHandle;
 
 /* USER CODE END FunctionPrototypes */
 
-void StartDefaultTask(void const * argument);
-void usart1_tx_f(void const * argument);
-void usart1_rx_f(void const * argument);
-void usart2_tx_f(void const * argument);
-void usart2_rx_f(void const * argument);
-void usart3_tx_f(void const * argument);
-void usart3_rx_f(void const * argument);
-void oled_f(void const * argument);
-void angle_sensor_f(void const * argument);
-void motor_run_f(void const * argument);
-void motor_sensor_f(void const * argument);
-void balance_f(void const * argument);
+/*这里的函数声明我们放在了各自的代码文件里面，已经上名已经引入了头文件*/
+//void StartDefaultTask(void const * argument); //注意:如果没有其它任务运行，务必把这个和它的函数定义的注释取消掉！！！
+//void usart1_tx_f(void const * argument);
+//void usart1_rx_f(void const * argument);
+//void usart2_tx_f(void const * argument);
+//void usart2_rx_f(void const * argument);
+//void usart3_tx_f(void const * argument);
+//void usart3_rx_f(void const * argument);
+//void oled_f(void const * argument);
+//void angle_sensor_f(void const * argument);
+//void motor_run_f(void const * argument);
+//void motor_sensor_f(void const * argument);
+//void balance_f(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -166,57 +174,67 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_TIMERS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
+	
+	xSensorQueue = xQueueCreate(1, sizeof(Sensor_Data_Typedef));
+	if(xSensorQueue == NULL) {
+		Error_Handler();
+	}
+	
+	//创建电机数据的队列
+	xMotorCmdQueue = xQueueCreate(5, sizeof(MotorCmd_t));			//电机命令
+	xMotorFeedbackQueue	= xQueueCreate(10, sizeof(MotorFeedback_t));		//电机编码器数据
+	
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+//  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 128);
+//  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of Usart1_tx */
-  osThreadDef(Usart1_tx, usart1_tx_f, osPriorityIdle, 0, 128);
+  osThreadDef(Usart1_tx, usart1_tx_f, osPriorityIdle, 0, 256);
   Usart1_txHandle = osThreadCreate(osThread(Usart1_tx), NULL);
 
   /* definition and creation of Usart1_rx */
-  osThreadDef(Usart1_rx, usart1_rx_f, osPriorityIdle, 0, 128);
-  Usart1_rxHandle = osThreadCreate(osThread(Usart1_rx), NULL);
+//  osThreadDef(Usart1_rx, usart1_rx_f, osPriorityIdle, 0, 128);
+//  Usart1_rxHandle = osThreadCreate(osThread(Usart1_rx), NULL);
 
   /* definition and creation of Usart2_tx */
-  osThreadDef(Usart2_tx, usart2_tx_f, osPriorityIdle, 0, 128);
-  Usart2_txHandle = osThreadCreate(osThread(Usart2_tx), NULL);
+//  osThreadDef(Usart2_tx, usart2_tx_f, osPriorityIdle, 0, 128);
+//  Usart2_txHandle = osThreadCreate(osThread(Usart2_tx), NULL);
 
   /* definition and creation of Usart2_rx */
-  osThreadDef(Usart2_rx, usart2_rx_f, osPriorityIdle, 0, 128);
-  Usart2_rxHandle = osThreadCreate(osThread(Usart2_rx), NULL);
+//  osThreadDef(Usart2_rx, usart2_rx_f, osPriorityIdle, 0, 128);
+//  Usart2_rxHandle = osThreadCreate(osThread(Usart2_rx), NULL);
 
   /* definition and creation of Usart3_tx */
-  osThreadDef(Usart3_tx, usart3_tx_f, osPriorityIdle, 0, 128);
-  Usart3_txHandle = osThreadCreate(osThread(Usart3_tx), NULL);
+//  osThreadDef(Usart3_tx, usart3_tx_f, osPriorityIdle, 0, 128);
+//  Usart3_txHandle = osThreadCreate(osThread(Usart3_tx), NULL);
 
   /* definition and creation of Usart3_rx */
-  osThreadDef(Usart3_rx, usart3_rx_f, osPriorityIdle, 0, 128);
-  Usart3_rxHandle = osThreadCreate(osThread(Usart3_rx), NULL);
+//  osThreadDef(Usart3_rx, usart3_rx_f, osPriorityIdle, 0, 128);
+//  Usart3_rxHandle = osThreadCreate(osThread(Usart3_rx), NULL);
 
   /* definition and creation of OLED */
-  osThreadDef(OLED, oled_f, osPriorityIdle, 0, 128);
+  osThreadDef(OLED, oled_f, osPriorityNormal, 0, 512);
   OLEDHandle = osThreadCreate(osThread(OLED), NULL);
 
   /* definition and creation of Angle_sensor */
-  osThreadDef(Angle_sensor, angle_sensor_f, osPriorityIdle, 0, 128);
+  osThreadDef(Angle_sensor, angle_sensor_f, osPriorityIdle, 0, 1024);
   Angle_sensorHandle = osThreadCreate(osThread(Angle_sensor), NULL);
 
   /* definition and creation of Motor_run */
-  osThreadDef(Motor_run, motor_run_f, osPriorityIdle, 0, 128);
-  Motor_runHandle = osThreadCreate(osThread(Motor_run), NULL);
+	osThreadDef(Motor_run, motor_run_f, osPriorityIdle, 0, 128);
+	Motor_runHandle = osThreadCreate(osThread(Motor_run), NULL);
 
   /* definition and creation of Motor_sensor */
-  osThreadDef(Motor_sensor, motor_sensor_f, osPriorityIdle, 0, 128);
-  Motor_sensorHandle = osThreadCreate(osThread(Motor_sensor), NULL);
+//  osThreadDef(Motor_sensor, motor_sensor_f, osPriorityIdle, 0, 128);
+//  Motor_sensorHandle = osThreadCreate(osThread(Motor_sensor), NULL);
 
   /* definition and creation of Balance */
-  osThreadDef(Balance, balance_f, osPriorityIdle, 0, 128);
-  BalanceHandle = osThreadCreate(osThread(Balance), NULL);
+//  osThreadDef(Balance, balance_f, osPriorityIdle, 0, 128);
+//  BalanceHandle = osThreadCreate(osThread(Balance), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -224,223 +242,16 @@ void MX_FREERTOS_Init(void) {
 
 }
 
-/* USER CODE BEGIN Header_StartDefaultTask */
-/**
-  * @brief  Function implementing the defaultTask thread.
-  * @param  argument: Not used
-  * @retval None
-  */
-/* USER CODE END Header_StartDefaultTask */
-void StartDefaultTask(void const * argument)
-{
-  /* USER CODE BEGIN StartDefaultTask */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END StartDefaultTask */
-}
 
-/* USER CODE BEGIN Header_usart1_tx_f */
-/**
-* @brief Function implementing the Usart1_tx thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_usart1_tx_f */
-void usart1_tx_f(void const * argument)
-{
-  /* USER CODE BEGIN usart1_tx_f */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END usart1_tx_f */
-}
+//void StartDefaultTask(void const * argument)
+//{
+//  /* USER CODE BEGIN StartDefaultTask */
+//  /* Infinite loop */
+//  for(;;)
+//  {
+//    osDelay(1);
+//  }
+//  /* USER CODE END StartDefaultTask */
+//}
 
-/* USER CODE BEGIN Header_usart1_rx_f */
-/**
-* @brief Function implementing the Usart1_rx thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_usart1_rx_f */
-void usart1_rx_f(void const * argument)
-{
-  /* USER CODE BEGIN usart1_rx_f */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END usart1_rx_f */
-}
 
-/* USER CODE BEGIN Header_usart2_tx_f */
-/**
-* @brief Function implementing the Usart2_tx thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_usart2_tx_f */
-void usart2_tx_f(void const * argument)
-{
-  /* USER CODE BEGIN usart2_tx_f */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END usart2_tx_f */
-}
-
-/* USER CODE BEGIN Header_usart2_rx_f */
-/**
-* @brief Function implementing the Usart2_rx thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_usart2_rx_f */
-void usart2_rx_f(void const * argument)
-{
-  /* USER CODE BEGIN usart2_rx_f */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END usart2_rx_f */
-}
-
-/* USER CODE BEGIN Header_usart3_tx_f */
-/**
-* @brief Function implementing the Usart3_tx thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_usart3_tx_f */
-void usart3_tx_f(void const * argument)
-{
-  /* USER CODE BEGIN usart3_tx_f */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END usart3_tx_f */
-}
-
-/* USER CODE BEGIN Header_usart3_rx_f */
-/**
-* @brief Function implementing the Usart3_rx thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_usart3_rx_f */
-void usart3_rx_f(void const * argument)
-{
-  /* USER CODE BEGIN usart3_rx_f */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END usart3_rx_f */
-}
-
-/* USER CODE BEGIN Header_oled_f */
-/**
-* @brief Function implementing the OLED thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_oled_f */
-void oled_f(void const * argument)
-{
-  /* USER CODE BEGIN oled_f */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END oled_f */
-}
-
-/* USER CODE BEGIN Header_angle_sensor_f */
-/**
-* @brief Function implementing the Angle_sensor thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_angle_sensor_f */
-void angle_sensor_f(void const * argument)
-{
-  /* USER CODE BEGIN angle_sensor_f */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END angle_sensor_f */
-}
-
-/* USER CODE BEGIN Header_motor_run_f */
-/**
-* @brief Function implementing the Motor_run thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_motor_run_f */
-void motor_run_f(void const * argument)
-{
-  /* USER CODE BEGIN motor_run_f */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END motor_run_f */
-}
-
-/* USER CODE BEGIN Header_motor_sensor_f */
-/**
-* @brief Function implementing the Motor_sensor thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_motor_sensor_f */
-void motor_sensor_f(void const * argument)
-{
-  /* USER CODE BEGIN motor_sensor_f */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END motor_sensor_f */
-}
-
-/* USER CODE BEGIN Header_balance_f */
-/**
-* @brief Function implementing the Balance thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_balance_f */
-void balance_f(void const * argument)
-{
-  /* USER CODE BEGIN balance_f */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
-  /* USER CODE END balance_f */
-}
-
-/* Private application code --------------------------------------------------*/
-/* USER CODE BEGIN Application */
-
-/* USER CODE END Application */
