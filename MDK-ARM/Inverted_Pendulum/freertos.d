@@ -1,17 +1,7 @@
 inverted_pendulum\freertos.o: ../Core/Src/freertos.c
 inverted_pendulum\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-<<<<<<< HEAD
 inverted_pendulum\freertos.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
 inverted_pendulum\freertos.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
-=======
-<<<<<<< HEAD
-inverted_pendulum\freertos.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
-inverted_pendulum\freertos.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
-=======
-inverted_pendulum\freertos.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stddef.h
-inverted_pendulum\freertos.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stdint.h
->>>>>>> b79ec7b7f570b72b5f6d3a6e5afc08623f8a238f
->>>>>>> 2ca27324fb4a7d12720f432ffac92761fa073c4c
 inverted_pendulum\freertos.o: ../Core/Inc/FreeRTOSConfig.h
 inverted_pendulum\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 inverted_pendulum\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
@@ -62,18 +52,8 @@ inverted_pendulum\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include
 inverted_pendulum\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 inverted_pendulum\freertos.o: ../Core/Inc/tim.h
 inverted_pendulum\freertos.o: ../Core/Inc/usart.h
-<<<<<<< HEAD
 inverted_pendulum\freertos.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 inverted_pendulum\freertos.o: F:\keil5\ARM\ARMCC\Bin\..\include\string.h
-=======
-<<<<<<< HEAD
-inverted_pendulum\freertos.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
-inverted_pendulum\freertos.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
-=======
-inverted_pendulum\freertos.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stdio.h
-inverted_pendulum\freertos.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\string.h
->>>>>>> b79ec7b7f570b72b5f6d3a6e5afc08623f8a238f
->>>>>>> 2ca27324fb4a7d12720f432ffac92761fa073c4c
 inverted_pendulum\freertos.o: ../Core/Inc/angle_sensor.h
 inverted_pendulum\freertos.o: ../Core/Inc/adc.h
 inverted_pendulum\freertos.o: ../Core/Inc/balance.h
