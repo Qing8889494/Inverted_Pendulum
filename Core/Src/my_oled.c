@@ -68,11 +68,20 @@ void oled_f(void const * argument)
 
     /* ---------- 一次性软件初始化 ---------- */
     if (first_run) {
-        // 注意：严禁再调用 MX_I2C1_Init()！I2C硬件已在main中初始化完毕。
-        OLED_Init();        // 发送命令初始化OLED控制器（使用已就绪的I2C）
-        OLED_Clear();       // 清屏
-        first_run = 0;
-    }
+    OLED_Init();
+    OLED_Clear();
+
+    // 显示启动画面（可根据屏幕尺寸调整坐标）
+    OLED_ShowStr(0, 0, "System Boot", 16);   // 第一行
+    OLED_ShowStr(0, 1, "Success!", 16);      // 第二行
+    // 也可显示更多信息，如版本号、作者等
+    // OLED_ShowStr(0, 2, "Version 1.0", 16);
+
+	osDelay(2000);          // 停留2秒，让人看清
+    OLED_Clear();           // 清除启动画面，准备显示数据
+
+    first_run = 0;
+}
 
     /* ---------- 主循环 ---------- */
     for (;;) {
