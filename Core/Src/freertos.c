@@ -179,6 +179,11 @@ void MX_FREERTOS_Init(void) {
 	if(xSensorQueue == NULL) {
 		Error_Handler();
 	}
+	
+	//创建电机数据的队列
+	xMotorCmdQueue = xQueueCreate(5, sizeof(MotorCmd_t));			//电机命令
+	xMotorFeedbackQueue	= xQueueCreate(10, sizeof(MotorFeedback_t));		//电机编码器数据
+	
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
 

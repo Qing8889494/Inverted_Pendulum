@@ -1,7 +1,17 @@
 inverted_pendulum\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 inverted_pendulum\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
+<<<<<<< HEAD
 inverted_pendulum\port.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
 inverted_pendulum\port.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
+=======
+<<<<<<< HEAD
+inverted_pendulum\port.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+inverted_pendulum\port.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+=======
+inverted_pendulum\port.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stddef.h
+inverted_pendulum\port.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stdint.h
+>>>>>>> b79ec7b7f570b72b5f6d3a6e5afc08623f8a238f
+>>>>>>> 2ca27324fb4a7d12720f432ffac92761fa073c4c
 inverted_pendulum\port.o: ../Core/Inc/FreeRTOSConfig.h
 inverted_pendulum\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 inverted_pendulum\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
