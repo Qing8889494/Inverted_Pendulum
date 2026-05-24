@@ -7,7 +7,7 @@ inverted_pendulum\my_oled.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_d
 inverted_pendulum\my_oled.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h
 inverted_pendulum\my_oled.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f407xx.h
 inverted_pendulum\my_oled.o: ../Drivers/CMSIS/Include/core_cm4.h
-inverted_pendulum\my_oled.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+inverted_pendulum\my_oled.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stdint.h
 inverted_pendulum\my_oled.o: ../Drivers/CMSIS/Include/cmsis_version.h
 inverted_pendulum\my_oled.o: ../Drivers/CMSIS/Include/cmsis_compiler.h
 inverted_pendulum\my_oled.o: ../Drivers/CMSIS/Include/cmsis_armcc.h
@@ -15,7 +15,7 @@ inverted_pendulum\my_oled.o: ../Drivers/CMSIS/Include/mpu_armv7.h
 inverted_pendulum\my_oled.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h
 inverted_pendulum\my_oled.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 inverted_pendulum\my_oled.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h
-inverted_pendulum\my_oled.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
+inverted_pendulum\my_oled.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stddef.h
 inverted_pendulum\my_oled.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h
 inverted_pendulum\my_oled.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h
 inverted_pendulum\my_oled.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio_ex.h
@@ -51,7 +51,7 @@ inverted_pendulum\my_oled.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/
 inverted_pendulum\my_oled.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 inverted_pendulum\my_oled.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 inverted_pendulum\my_oled.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
-inverted_pendulum\my_oled.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
-inverted_pendulum\my_oled.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
+inverted_pendulum\my_oled.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stdio.h
+inverted_pendulum\my_oled.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\string.h
 inverted_pendulum\my_oled.o: ../Core/Inc/i2c.h
 inverted_pendulum\my_oled.o: ../Core/Inc/oled.h

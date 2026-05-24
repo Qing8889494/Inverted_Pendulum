@@ -2,8 +2,8 @@ inverted_pendulum\my_usart.o: ..\Core\Src\my_usart.c
 inverted_pendulum\my_usart.o: ../Core/Inc/my_usart.h
 inverted_pendulum\my_usart.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 inverted_pendulum\my_usart.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-inverted_pendulum\my_usart.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
-inverted_pendulum\my_usart.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+inverted_pendulum\my_usart.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stddef.h
+inverted_pendulum\my_usart.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stdint.h
 inverted_pendulum\my_usart.o: ../Core/Inc/FreeRTOSConfig.h
 inverted_pendulum\my_usart.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 inverted_pendulum\my_usart.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
@@ -54,5 +54,5 @@ inverted_pendulum\my_usart.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_
 inverted_pendulum\my_usart.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 inverted_pendulum\my_usart.o: ../Core/Inc/adc.h
 inverted_pendulum\my_usart.o: ../Core/Inc/usart.h
-inverted_pendulum\my_usart.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
-inverted_pendulum\my_usart.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
+inverted_pendulum\my_usart.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stdio.h
+inverted_pendulum\my_usart.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\string.h
