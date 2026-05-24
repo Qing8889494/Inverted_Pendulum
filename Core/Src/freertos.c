@@ -225,8 +225,8 @@ void MX_FREERTOS_Init(void) {
   Angle_sensorHandle = osThreadCreate(osThread(Angle_sensor), NULL);
 
   /* definition and creation of Motor_run */
-//  osThreadDef(Motor_run, motor_run_f, osPriorityIdle, 0, 128);
-//  Motor_runHandle = osThreadCreate(osThread(Motor_run), NULL);
+	osThreadDef(Motor_run, motor_run_f, osPriorityIdle, 0, 128);
+	Motor_runHandle = osThreadCreate(osThread(Motor_run), NULL);
 
   /* definition and creation of Motor_sensor */
 //  osThreadDef(Motor_sensor, motor_sensor_f, osPriorityIdle, 0, 128);
