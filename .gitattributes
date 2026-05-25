@@ -1,0 +1,2 @@
+# Keil 自动生成的 RTE 配置文件，合并时自动使用本地版本，永不冲突
+MDK-ARM/RTE/**/RTE_Components.h merge=ours
