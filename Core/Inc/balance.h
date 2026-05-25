@@ -2,14 +2,14 @@
 /**
   ******************************************************************************
   * 文件名称          : balance.h
-  * 功能描述          : 
+  * 功能描述          : 结构体以及任务函数声明
   ******************************************************************************
   * @attention
   *
   * 版权所有：控制工程课程项目组
   * 保留所有权利
   *
-  * 作    者：
+  * 作    者：高愉坤
   * 创建时间：
   * 使用说明：
   * 修改记录：
@@ -23,5 +23,21 @@
 //任务函数声明
 void balance_f(void const * argument);
 //其它函数声明
+typedef struct {
+	float Target;
+	float Actual;
+	float Out;
+	
+	float Kp;
+	float Ki;
+	float Kd;
+	
+	float Error0;
+	float Error1;
+	float ErrorInt;
+	
+	float OutMax;
+	float OutMin;
+} PID_t;
 
 #endif

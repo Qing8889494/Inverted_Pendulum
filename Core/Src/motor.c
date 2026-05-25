@@ -77,7 +77,7 @@ void motor_sensor_f(void const * argument)
 			
 		}
 		
-		osDelay(10);
+		osDelay(5);
   }
   
 }
