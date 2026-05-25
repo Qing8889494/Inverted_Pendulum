@@ -1,9 +1,9 @@
 inverted_pendulum\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/queue.c
-inverted_pendulum\queue.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdlib.h
-inverted_pendulum\queue.o: F:\keil5\ARM\ARMCC\Bin\..\include\string.h
+inverted_pendulum\queue.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stdlib.h
+inverted_pendulum\queue.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\string.h
 inverted_pendulum\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-inverted_pendulum\queue.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
-inverted_pendulum\queue.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
+inverted_pendulum\queue.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stddef.h
+inverted_pendulum\queue.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stdint.h
 inverted_pendulum\queue.o: ../Core/Inc/FreeRTOSConfig.h
 inverted_pendulum\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 inverted_pendulum\queue.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
