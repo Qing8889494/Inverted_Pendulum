@@ -53,6 +53,10 @@ inverted_pendulum\my_usart.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_
 inverted_pendulum\my_usart.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 inverted_pendulum\my_usart.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 inverted_pendulum\my_usart.o: ../Core/Inc/adc.h
+inverted_pendulum\my_usart.o: ../Core/Inc/motor.h
+inverted_pendulum\my_usart.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
+inverted_pendulum\my_usart.o: ../Core/Inc/tim.h
 inverted_pendulum\my_usart.o: ../Core/Inc/usart.h
 inverted_pendulum\my_usart.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+inverted_pendulum\my_usart.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdlib.h
 inverted_pendulum\my_usart.o: F:\keil5\ARM\ARMCC\Bin\..\include\string.h

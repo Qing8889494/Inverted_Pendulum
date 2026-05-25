@@ -1,0 +1,31 @@
+[33m9cd0e23[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeat[m[33m, [m[1;31morigin/feat[m[33m)[m gyk
+[33m2e7c693[m 更新了balance但是控制开关逻辑以及串口调试未加
+[33m623f9d7[m 更新了balance但是控制开关逻辑以及串口调试未加
+[33m7ea5d0e[m 添加git配置，自动解决keil RTE文件冲突
+[33me26508a[m 冲突合并
+[33me6802ad[m 冲突合并
+[33m0a15c7b[m gyk
+[33m462e1dd[m gyk
+[33m8aea258[m Merge branch 'feat' of github.com:Qing8889494/Inverted_Pendulum into feat
+[33m3c938e6[m 电脑端发送电机调速指令的代码提交
+[33m6c2a3cc[m 解决复位后 OLED 不亮的问题和静态变量残留数据的问题
+[33mff14c4b[m 更改了i2c配置，B6,B7换成B8，B9
+[33m713b0ad[m 改了一些配置
+[33m992d641[m 开屏文字新
+[33m2ca2732[m 电机代码更新,解决远程合并冲突
+[33m2d10f5f[m 电机代码更新
+[33mb79ec7b[m OLED开屏文字
+[33m343f26b[m 向思嘉hello
+[33m36b3606[m 修复OLED
+[33m0b4b5b2[m OLED修复
+[33mf1dc0b8[m 修复OLED
+[33me5f30fa[m Merge branch 'feat' of github.com:Qing8889494/Inverted_Pendulum into feat
+[33me6c564b[m 角度传感器测试正常，并使用了串口1的发送函数测试
+[33m3b8020d[m 电机转速控制提交
+[33me0066cb[m 代码整体框架
+[33m9021c25[m Signed-off-by: meteor4527 <2412604213@qq.com>
+[33m31e07cf[m 整个代码 的框架
+[33m79818ab[m 哈喽世界by扬州
+[33mfd3a3f2[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m 加入新的代码，便于编辑每个任务的函数
+[33mcbae1ed[m initial commit
+[33m6370061[m initial commit

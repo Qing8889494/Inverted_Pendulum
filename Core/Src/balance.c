@@ -147,7 +147,7 @@ void set_f(void const * argument)
 	for(;;)
 	{
 		/*控制启动*/
-		if ()			//留出判断条件
+		if (1)			//留出判断条件
 		{
 			RunState = !RunState;	//运行状态取非，用于控制程序启动和停止
 		}

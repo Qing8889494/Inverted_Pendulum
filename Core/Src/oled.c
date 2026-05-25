@@ -15,20 +15,21 @@ this library is a 0.91'OLED(ssd1306) driver
  * 
 */
 uint8_t initcmd1[] = {
-	0xAE,		//display off
-	0xD5, 0x80, //Set Display Clock Divide Ratio/Oscillator Frequency
-	0xA8, 0x1F, //set multiplex Ratio
-	0xD3, 0x00, //display offset
-	0x40,		//set display start line
-	0x8d, 0x14, //set charge pump
-	0xa1,		//set segment remap
-	0xc8,		//set com output scan direction
-	0xda, 0x00, //set com pins hardware configuration
-	0x81, 0x80, //set contrast control
-	0xd9, 0x1f, //set pre-charge period
-	0xdb, 0x40, //set vcom deselect level
-	0xa4,		//Set Entire Display On/Off
-	0xaf,		//set display on
+    0xAE,         // Display Off
+    0xD5, 0x80,   // Set Display Clock Divide Ratio/Oscillator Frequency
+    0xA8, 0x3F,   // Set Multiplex Ratio → 64 rows (0x3F)
+    0xD3, 0x00,   // Set Display Offset
+    0x40,         // Set Display Start Line
+    0x8D, 0x14,   // Enable Charge Pump
+    0xA1,         // Set Segment Re-map (column 127 mapped to SEG0)
+    0xC8,         // Set COM Output Scan Direction (remapped mode)
+    0xDA, 0x12,   // Set COM Pins Hardware Configuration → Alternate (0x12)
+    0x20, 0x02,   // Set Memory Addressing Mode → Page Addressing Mode
+    0x81, 0x80,   // Set Contrast Control
+    0xD9, 0x1F,   // Set Pre-charge Period
+    0xDB, 0x40,   // Set VCOMH Deselect Level
+    0xA4,         // Entire Display ON follows RAM content
+    0xAF,         // Display ON
 };
 /**
  * OLED writes commands and data functions
@@ -320,7 +321,7 @@ void OLED_ShowChar(uint8_t x, uint8_t y, uint8_t ch, uint8_t fontsize)
 void OLED_Allfill(void)
 {
 	uint8_t i, j;
-	for (i = 0; i < 4; i++)
+	for (i = 0; i < 8; i++)
 	{
 		OLED_Write_cmd(0xb0 + i);
 		OLED_Write_cmd(0x00);
@@ -350,7 +351,7 @@ void OLED_Set_Position(uint8_t x, uint8_t y)
 void OLED_Clear(void)
 {
 	uint8_t i, n;
-	for (i = 0; i < 4; i++)
+	for (i = 0; i < 8; i++)
 	{
 		OLED_Write_cmd(0xb0 + i);
 		OLED_Write_cmd(0x00);
