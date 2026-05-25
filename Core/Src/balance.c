@@ -113,7 +113,7 @@ void balance_f(void const * argument)
 				AnglePID.Actual = angle.angle1;		//内环为角度环，实际值为角度值
 				PID_Update(&AnglePID);					//调用封装好的函数，一步完成PID计算和更新
 				motor_command.target_speed = AnglePID.Out;
-				xQueueSend(xMotorFeedbackQueue, &motor_command, 0);//角度环的输出值给到电机	
+				xQueueSend(xMotorCmdQueue, &motor_command, 0);//角度环的输出值给到电机	
 			}
 			
 			/*位置环计次分频*/
