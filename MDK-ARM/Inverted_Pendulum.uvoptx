@@ -103,7 +103,11 @@
         <bEvRecOn>1</bEvRecOn>
         <bSchkAxf>0</bSchkAxf>
         <bTchkAxf>0</bTchkAxf>
+<<<<<<< HEAD
         <nTsel>6</nTsel>
+=======
+        <nTsel>0</nTsel>
+>>>>>>> 143b53fd1fed6c6548171fec787061d3bb732d4e
         <sDll></sDll>
         <sDllPa></sDllPa>
         <sDlgDll></sDlgDll>
