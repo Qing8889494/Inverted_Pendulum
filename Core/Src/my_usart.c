@@ -13,6 +13,8 @@
   * 创建时间：2026.5.23
   * 修改记录：用了串口1的发数据，用来调试传感器的数据是否正确的（周南全，2026.5.23）
 	*						用串口2的收数据，来接收电脑端发送的电机速度指令：@v 300
+	*						增加串口2 SerialPlot 波形发送（向思嘉，2026.5.25）
+  *           增加串口3 PID 参数接收（向思嘉，2026.5.25）
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -129,15 +131,79 @@ void usart1_rx_f(void const * argument)
   }
 }
 
+
+// 引用 balance.c 中的 PID 全局变量（用于更新系数）
+typedef struct {
+    float Target;
+    float Actual;
+    float Kp, Ki, Kd;
+    float Error0, Error1, ErrorInt;
+    float Out, OutMax, OutMin;
+} PID_t;
+
+extern PID_t AnglePID;      // 内环角度环
+extern PID_t LocationPID;   // 外环位置环
+
+// PID 参数结构体（用于队列）
+typedef struct {
+    float inner_kp;
+    float inner_ki;
+    float inner_kd;
+    float outer_kp;
+    float outer_ki;
+    float outer_kd;
+} PID_Params_t;
+
+// 队列句柄
+static QueueHandle_t xPIDQueue = NULL;
+
 //任务函数定义
+/* ========== 串口2 任务：发送波形数据给 SerialPlot ========== */
 void usart2_tx_f(void const * argument)
 {
- 
-  for(;;)
-  {
-    osDelay(1);
-  }
-  
+	Sensor_Data_Typedef sensor_data;
+    MotorCmd_t motor_cmd;
+    float plot_data[3];
+    char tx_buf[128];
+    char *ptr;
+    uint8_t i;
+
+    for(;;)
+    {
+        // 获取传感器数据（角度、角速度）
+        if (xQueuePeek(xSensorQueue, &sensor_data, 0) != pdPASS)
+        {
+            osDelay(10);
+            continue;
+        }
+        // 获取电机当前目标速度
+        if (xQueuePeek(xMotorCmdQueue, &motor_cmd, 0) != pdPASS)
+        {
+            motor_cmd.target_speed = 0;  // 默认值
+        }
+
+        // 准备三个通道数据：角度1、角速度1、电机目标速度
+        plot_data[0] = sensor_data.angle1;
+        plot_data[1] = sensor_data.angular_velocity1;
+        plot_data[2] = (float)motor_cmd.target_speed;
+
+        // 格式化字符串：数值1,数值2,数值3\r\n
+        ptr = tx_buf;
+        for (i = 0; i < 3; i++)
+        {
+            ptr += sprintf(ptr, "%.3f", plot_data[i]);
+            if (i < 2) *ptr++ = ',';
+        }
+        *ptr++ = '\r';
+        *ptr++ = '\n';
+        *ptr = '\0';
+				
+				// 通过串口2发送
+        HAL_UART_Transmit(&huart2, (uint8_t*)tx_buf, ptr - tx_buf, 100);
+
+        // 发送间隔 20ms（可根据需要调整）
+        osDelay(20);
+			}
 }
 
 
@@ -152,6 +218,7 @@ void usart2_rx_f(void const * argument)
   
 }
 
+/* ========== 串口3 任务：接收 PID 参数并更新 ========== */
 //任务函数定义
 void usart3_tx_f(void const * argument)
 {
@@ -167,10 +234,92 @@ void usart3_tx_f(void const * argument)
 //任务函数定义
 void usart3_rx_f(void const * argument)
 {
+    uint8_t      rx_char;
+    uint8_t      rx_buf[64];
+    uint8_t      idx = 0;
+    PID_Params_t pid;
 
-  for(;;)
-  {
-    osDelay(1);
-  }
- 
+    for(;;)
+    {
+        if (HAL_UART_Receive(&huart3, &rx_char, 1, 100) == HAL_OK)
+        {
+            if (rx_char == '\n')
+            {
+                rx_buf[idx] = '\0';
+
+                if (idx > 0 && xPIDQueue != NULL)
+                {
+                    if (sscanf((char*)rx_buf, "%f,%f,%f,%f,%f,%f",
+                               &pid.inner_kp, &pid.inner_ki, &pid.inner_kd,
+                               &pid.outer_kp, &pid.outer_ki, &pid.outer_kd) == 6)
+                    {
+                        // 覆盖写入：保证队列中始终是最新一帧
+                        xQueueOverwrite(xPIDQueue, &pid);
+                    }
+                    // 解析失败静默丢弃，不影响控制任务
+                }
+
+                idx = 0;
+            }
+            else if (rx_char != '\r')
+            {
+                if (idx < sizeof(rx_buf) - 1)
+                    rx_buf[idx++] = rx_char;
+                else
+                    idx = 0;  // 缓冲区溢出，丢弃当前帧
+            }
+        }
+
+        osDelay(1);
+    }
+}
+
+
+static void PIDUpdateTask(void *pvParameters)
+{
+    PID_Params_t new_pid;
+
+    for(;;)
+    {
+        // 阻塞等待队列中有新数据（超时100ms）
+        if (xQueueReceive(xPIDQueue, &new_pid, pdMS_TO_TICKS(100)) == pdTRUE)
+        {
+            // 用 FreeRTOS 临界区保护，防止控制任务读到写到一半的参数
+            taskENTER_CRITICAL();
+            {
+                AnglePID.Kp    = new_pid.inner_kp;
+                AnglePID.Ki    = new_pid.inner_ki;
+                AnglePID.Kd    = new_pid.inner_kd;
+                LocationPID.Kp = new_pid.outer_kp;
+                LocationPID.Ki = new_pid.outer_ki;
+                LocationPID.Kd = new_pid.outer_kd;
+            }
+            taskEXIT_CRITICAL();
+
+            // 通过串口1发送确认（注意：与串口1其他任务存在竞争，
+            // 仅影响调试打印，不影响控制逻辑，可按需删除此行）
+            char ack[] = "PID updated via queue\r\n";
+            HAL_UART_Transmit(&huart1, (uint8_t*)ack, strlen(ack), 100);
+        }
+    }
+}
+
+/* ==========================================================================
+ * USART_Init — 统一初始化函数
+ *
+ * 在 main.c 中，将原来的：
+ *   USART3_InitQueue();
+ * 替换为：
+ *   USART_Init();
+ * 必须在 osKernelStart() 之前调用。
+ * ========================================================================== */
+void USART_Init(void)
+{
+    // 创建 PID 队列（长度1，覆盖模式）
+    xPIDQueue = xQueueCreate(1, sizeof(PID_Params_t));
+    configASSERT(xPIDQueue != NULL);
+
+    // 创建 PID 更新任务（优先级2，低于平衡控制任务）
+    BaseType_t ret = xTaskCreate(PIDUpdateTask, "PIDUpd", 256, NULL, 2, NULL);
+    configASSERT(ret == pdPASS);
 }
