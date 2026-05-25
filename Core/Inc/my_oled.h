@@ -19,7 +19,7 @@
 
 #ifndef __MY_OLED_H
 #define __MY_OLED_H
-
+#include "main.h"
 //任务函数声明
 void oled_f(void const * argument);
 //其它函数声明

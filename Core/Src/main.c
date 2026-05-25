@@ -26,6 +26,7 @@
 #include "usart.h"
 #include "gpio.h"
 #include "led.h"
+#include "my_oled.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -106,7 +107,7 @@ int main(void)
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_raw, ADC_CHANNEL_NUM);
   USART_Init();
 	/* USER CODE END 2 */
-
+	
   /* Call init function for freertos objects (in cmsis_os2.c) */
   MX_FREERTOS_Init();
 

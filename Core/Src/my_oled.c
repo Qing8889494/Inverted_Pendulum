@@ -5,6 +5,7 @@
   * 功能描述          : 调用 oled_show("标签", 数值) 即可在OLED上显示16像素大字
   *                    屏幕固定显示4行，超过4个参数会自动翻页（3秒一页）
   *                    需搭配0.96寸128×64 I2C OLED驱动 (oled.c已改为64行模式)
+  *                    已优化闪烁：仅在数据变化或翻页时刷新屏幕
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -28,12 +29,12 @@ void oled_show(const char *label, float value)
     oled_cmd_new = 1;
 }
 
-/* ========== OLED 显示任务 (16像素大字 + 自动翻页) ========== */
+/* ========== OLED 显示任务 (16像素大字 + 自动翻页 + 无闪烁) ========== */
 void oled_f(void const * argument)
 {
     /* ---------- 可调参数 ---------- */
     #define MAX_VISIBLE_ROWS   4        // 一屏显示 4 行大字
-    #define MAX_TOTAL_ITEMS    12       // 最多保存 12 个参数（可增大）
+    #define MAX_TOTAL_ITEMS    12       // 最多保存 12 个参数
     #define STR_BUF_SIZE       32
     #define REFRESH_MS         30
     #define FONT_SIZE          16       // 16 像素大字体
@@ -43,7 +44,7 @@ void oled_f(void const * argument)
     typedef struct {
         char    label[16];
         float   value;
-    } CmdData_t;                    // ★ 补上这个结构体定义
+    } CmdData_t;
 
     typedef struct {
         char    label[16];
@@ -56,6 +57,7 @@ void oled_f(void const * argument)
     static uint8_t       first_run  = 1;
     static uint8_t       scroll_offset = 0;     // 当前显示的起始索引
     static uint32_t      last_scroll_tick = 0;
+    static uint8_t       need_refresh = 1;      // 需要刷新标志
 
     char local_cmd[OLED_CMD_BUF_SIZE];
     char line_buf[STR_BUF_SIZE];
@@ -63,23 +65,24 @@ void oled_f(void const * argument)
 
     /* ---------- 一次性软件初始化 ---------- */
     if (first_run) {
-        OLED_Init();            // I2C 已在 main 中初始化完毕
+        OLED_Init();
         HAL_Delay(50);
         OLED_Clear();
         HAL_Delay(20);
         OLED_Clear();
 
-        // 启动画面（16 像素字体占 2 页）
-        OLED_ShowStr(0, 0, "  System Boot", FONT_SIZE);   // 页 0
-        OLED_ShowStr(0, 2, "  Success!", FONT_SIZE);       // 页 2
+        // 启动画面
+        OLED_ShowStr(0, 0, "  System Boot", FONT_SIZE);
+        OLED_ShowStr(0, 2, "  Success!", FONT_SIZE);
         osDelay(2000);
         OLED_Clear();
         first_run = 0;
+        need_refresh = 1;   // 启动后立即刷新（显示空白或首条数据）
     }
 
     /* ---------- 主循环 ---------- */
     for (;;) {
-        /* 1. 处理新命令（支持动态添加，最多 MAX_TOTAL_ITEMS 个） */
+        /* 1. 处理新命令 */
         if (oled_cmd_new) {
             strncpy(local_cmd, (const char *)oled_cmd_str, OLED_CMD_BUF_SIZE - 1);
             local_cmd[OLED_CMD_BUF_SIZE - 1] = '\0';
@@ -115,37 +118,41 @@ void oled_f(void const * argument)
                             items[idx].label[0] -= 32;
                     }
                 }
+                need_refresh = 1;   // 数据变化，置刷新标志
             }
         }
 
-        /* 2. 自动翻页逻辑（每 3 秒翻一屏，仅当参数多于 4 行时） */
+        /* 2. 自动翻页逻辑 */
         if (HAL_GetTick() - last_scroll_tick > 3000) {
             last_scroll_tick = HAL_GetTick();
             if (item_count > MAX_VISIBLE_ROWS) {
                 scroll_offset += MAX_VISIBLE_ROWS;
                 if (scroll_offset >= item_count) {
-                    scroll_offset = 0;          // 循环翻页
+                    scroll_offset = 0;
                 }
+                need_refresh = 1;   // 翻页触发刷新
             }
         }
 
-        /* 3. 刷新屏幕（只显示当前页的 4 行） */
-        // 清空 4 行
-        for (y = 0; y < MAX_VISIBLE_ROWS; y++) {
-            OLED_ShowStr(0, y * 2, "               ", FONT_SIZE);
+        /* 3. 仅在需要时刷新屏幕 */
+        if (need_refresh) {
+            // 先清空当前显示的4行（避免短字符残留）
+            for (y = 0; y < MAX_VISIBLE_ROWS; y++) {
+                OLED_ShowStr(0, y * 2, "               ", FONT_SIZE);
+            }
+
+            // 绘制实际数据
+            for (uint8_t i = 0; i < MAX_VISIBLE_ROWS; i++) {
+                uint8_t idx = scroll_offset + i;
+                if (idx >= item_count) break;
+
+                snprintf(line_buf, STR_BUF_SIZE, "%.10s:%.3f", items[idx].label, (double)items[idx].value);
+                line_buf[MAX_CHARS_LINE] = '\0';
+                OLED_ShowStr(0, i * 2, line_buf, FONT_SIZE);
+            }
+            need_refresh = 0;   // 清除刷新标志
         }
 
-        // 显示可见参数
-        for (uint8_t i = 0; i < MAX_VISIBLE_ROWS; i++) {
-            uint8_t idx = scroll_offset + i;
-            if (idx >= item_count) break;   // 不满一屏时提前结束
-
-            snprintf(line_buf, STR_BUF_SIZE, "%.10s:%.1f", items[idx].label, (double)items[idx].value);
-            line_buf[MAX_CHARS_LINE] = '\0';
-            OLED_ShowStr(0, i * 2, line_buf, FONT_SIZE);
-        }
-
-        osDelay(REFRESH_MS);
+        osDelay(REFRESH_MS);   // 控制循环速度，不影响刷新频率
     }
 }
-                                                                                                                                                      
