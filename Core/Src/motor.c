@@ -12,7 +12,8 @@
   *
   * 作    者：韩庆
   * 创建时间：2026.5.23
-  * 修改记录：
+  * 修改记录：完成基本代码逻辑，还未测试（2026.5.24）
+	*						
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -26,8 +27,8 @@ QueueHandle_t xMotorFeedbackQueue;	//发送反馈队列
 //任务函数定义
 void motor_run_f(void const * argument)
 {
-	//初始化
 	MotorCmd_t cmd;
+	//初始化
 	motor_init();
 	
   for(;;)
@@ -48,6 +49,7 @@ void motor_sensor_f(void const * argument)
   MotorFeedback_t feedback;
 	int32_t		last_cnt	= 0;
 	uint32_t	last_time	= 0;
+	int16_t		last_rpm	= 0;
 	
 	uint32_t	now;
 	uint32_t	dt;
@@ -66,11 +68,13 @@ void motor_sensor_f(void const * argument)
 		{
 			delta	= feedback.encoder_pos-last_cnt;
 			feedback.speed_rpm	= (float)delta * 60000.0f / (ENCODER_PPR * dt);
+			last_rpm	= feedback.speed_rpm;
 			last_cnt	= feedback.encoder_pos;
 			last_time	= now;
 		}
 		else{
-			
+			//时间间隔太短，保持上一次转速
+			feedback.speed_rpm	= last_rpm;
 		}
 		if ( xQueueSend(xMotorFeedbackQueue, &feedback, pdMS_TO_TICKS(10)) != pdPASS)
 		{

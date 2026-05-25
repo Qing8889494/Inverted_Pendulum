@@ -836,11 +836,18 @@ Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I../Middlewares/Third_Party/FreeRTOS/S
 ource/include -I../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I../Midd
 lewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I../Drivers/CMSIS/D
 evice/ST/STM32F4xx/Include -I../Drivers/CMSIS/Include -I.\RTE\_Inverted_Pendulu
+<<<<<<< HEAD
 m -ID:\keil5\Pack\ARM\CMSIS\5.9.0\CMSIS\Core\Include -ID:\keil5\Pack\Keil\STM32
 F4xx_DFP\3.1.1\Device\Include --predefine="__MICROLIB SETA 1" --predefine="__UV
 ISION_VERSION SETA 537" --predefine="_RTE_ SETA 1" --predefine="STM32F407xx SET
 A 1" --predefine="_RTE_ SETA 1" --list=startup_stm32f407xx.lst startup_stm32f40
 7xx.s
+=======
+m -IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include -IF:\keil5\ARM\PACK\Ke
+il\STM32F4xx_DFP\3.1.1\Device\Include --predefine="__MICROLIB SETA 1" --predefi
+ne="__UVISION_VERSION SETA 542" --predefine="STM32F407xx SETA 1" --predefine="_
+RTE_ SETA 1" --list=startup_stm32f407xx.lst startup_stm32f407xx.s
+>>>>>>> 70e158fbaaae6a1726280885b5e78464dd836912
 
 
 

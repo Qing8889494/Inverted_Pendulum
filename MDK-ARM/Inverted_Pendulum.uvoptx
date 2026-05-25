@@ -103,7 +103,14 @@
         <bEvRecOn>1</bEvRecOn>
         <bSchkAxf>0</bSchkAxf>
         <bTchkAxf>0</bTchkAxf>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+        <nTsel>6</nTsel>
+=======
+>>>>>>> 70e158fbaaae6a1726280885b5e78464dd836912
         <nTsel>0</nTsel>
+>>>>>>> 143b53fd1fed6c6548171fec787061d3bb732d4e
         <sDll></sDll>
         <sDllPa></sDllPa>
         <sDlgDll></sDlgDll>
@@ -114,7 +121,7 @@
         <tDlgDll></tDlgDll>
         <tDlgPa></tDlgPa>
         <tIfile></tIfile>
-        <pMon>BIN\UL2CM3.DLL</pMon>
+        <pMon>STLink\ST-LINKIII-KEIL_SWO.dll</pMon>
       </DebugOpt>
       <TargetDriverDllRegistry>
         <SetRegEntry>
