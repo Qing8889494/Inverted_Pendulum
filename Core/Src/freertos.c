@@ -197,8 +197,8 @@ void MX_FREERTOS_Init(void) {
   Usart1_txHandle = osThreadCreate(osThread(Usart1_tx), NULL);
 
   /* definition and creation of Usart1_rx */
-//  osThreadDef(Usart1_rx, usart1_rx_f, osPriorityIdle, 0, 128);
-//  Usart1_rxHandle = osThreadCreate(osThread(Usart1_rx), NULL);
+  osThreadDef(Usart1_rx, usart1_rx_f, osPriorityIdle, 0, 128);
+  Usart1_rxHandle = osThreadCreate(osThread(Usart1_rx), NULL);
 
   /* definition and creation of Usart2_tx */
 //  osThreadDef(Usart2_tx, usart2_tx_f, osPriorityIdle, 0, 128);
