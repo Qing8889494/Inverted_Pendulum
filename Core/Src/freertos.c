@@ -193,11 +193,11 @@ void MX_FREERTOS_Init(void) {
 //  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of Usart1_tx */
-  osThreadDef(Usart1_tx, usart1_tx_f, osPriorityIdle, 0, 256);
+  osThreadDef(Usart1_tx, usart1_tx_f, osPriorityBelowNormal, 0, 256);
   Usart1_txHandle = osThreadCreate(osThread(Usart1_tx), NULL);
 
   /* definition and creation of Usart1_rx */
-  osThreadDef(Usart1_rx, usart1_rx_f, osPriorityIdle, 0, 128);
+  osThreadDef(Usart1_rx, usart1_rx_f, osPriorityNormal, 0, 256);
   Usart1_rxHandle = osThreadCreate(osThread(Usart1_rx), NULL);
 
   /* definition and creation of Usart2_tx */
@@ -229,8 +229,8 @@ void MX_FREERTOS_Init(void) {
 	Motor_runHandle = osThreadCreate(osThread(Motor_run), NULL);
 
   /* definition and creation of Motor_sensor */
-//  osThreadDef(Motor_sensor, motor_sensor_f, osPriorityIdle, 0, 128);
-//  Motor_sensorHandle = osThreadCreate(osThread(Motor_sensor), NULL);
+  osThreadDef(Motor_sensor, motor_sensor_f, osPriorityIdle, 0, 512);
+  Motor_sensorHandle = osThreadCreate(osThread(Motor_sensor), NULL);
 
   /* definition and creation of Balance */
 //  osThreadDef(Balance, balance_f, osPriorityIdle, 0, 128);

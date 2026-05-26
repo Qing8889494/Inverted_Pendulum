@@ -29,6 +29,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "led.h"
+#include "my_oled.h"
 
 #define UART1_RX_BUF_SIZE 32
 static uint8_t uart1_rx_buf[UART1_RX_BUF_SIZE];  // 接收缓冲
@@ -37,7 +38,7 @@ static uint8_t uart1_rx_idx = 0;                 // 缓冲索引
 //任务函数定义
 void usart1_tx_f(void const * argument)
 {
-	LED_On(LED1_Pin);
+	
 	Sensor_Data_Typedef sensor_data;
 	char buf[128];
 	
@@ -55,12 +56,23 @@ void usart1_tx_f(void const * argument)
          HAL_UART_Transmit(&huart1, (uint8_t *)buf, strlen(buf), 100);
      }
   }
+	
+	/*
+	MotorFeedback_t sensor_motor;
+	
+	for(;;)
+	{
+		if (xQueueReceive(xMotorFeedbackQueue, &sensor_motor, 0)== pdPASS)
+		{
+			//oled_show("Mspeed", sensor_motor.speed_rpm);
+		}
+	}
+	*/
 }
 
 //任务函数定义
 void usart1_rx_f(void const * argument)
 {
-	LED_On(LED2_Pin);
   uint8_t rx_char;          // 单次接收的字符
   int16_t speed = 0;        // 解析出的速度值
   MotorCmd_t motor_cmd;     // 电机指令结构体
@@ -83,7 +95,7 @@ void usart1_rx_f(void const * argument)
           
 				// ----- 调试：打印接收缓冲区原始数据 -----
     {
-        char dbg_buf[128];
+        char dbg_buf[20];
         int len = sprintf(dbg_buf, "RX[%d]: ", uart1_rx_idx);
         // 打印十六进制
         for (int i = 0; i < uart1_rx_idx; i++) {
@@ -105,11 +117,11 @@ void usart1_rx_f(void const * argument)
     }
     // ----- 调试结束 -----
 				
-				
           // 解析指令：@v 300 （格式检查：长度≥4、@v+空格开头）
           if (uart1_rx_idx >= 4 && uart1_rx_buf[0] == '@' && 
               uart1_rx_buf[1] == 'v' && uart1_rx_buf[2] == ' ')
           {
+
             // 提取空格后的速度数值（转换为int）
             speed = atoi((char *)&uart1_rx_buf[3]);
             
@@ -124,7 +136,6 @@ void usart1_rx_f(void const * argument)
             if (xQueueSend(xMotorCmdQueue, &motor_cmd, pdMS_TO_TICKS(10)) == pdPASS)
             {
               // 发送成功，返回确认信息
-							LED_On(LED3_Pin);
               char ack_buf[40];
               sprintf(ack_buf, "Success: Motor speed set to %d\r\n", speed);
               HAL_UART_Transmit(&huart1, (uint8_t *)ack_buf, strlen(ack_buf), 100);

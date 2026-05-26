@@ -52,3 +52,5 @@ inverted_pendulum\motor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr
 inverted_pendulum\motor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h
 inverted_pendulum\motor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h
 inverted_pendulum\motor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+inverted_pendulum\motor.o: ../Core/Inc/led.h
+inverted_pendulum\motor.o: ../Core/Inc/my_oled.h

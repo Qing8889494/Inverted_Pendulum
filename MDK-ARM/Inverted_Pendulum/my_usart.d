@@ -62,3 +62,4 @@ inverted_pendulum\my_usart.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\
 inverted_pendulum\my_usart.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
 inverted_pendulum\my_usart.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 inverted_pendulum\my_usart.o: ../Core/Inc/led.h
+inverted_pendulum\my_usart.o: ../Core/Inc/my_oled.h
