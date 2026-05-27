@@ -30,6 +30,7 @@
 #include <string.h>
 #include "led.h"
 #include "my_oled.h"
+#include "balance.h"
 
 #define UART1_RX_BUF_SIZE 32
 static uint8_t uart1_rx_buf[UART1_RX_BUF_SIZE];  // 接收缓冲
@@ -173,13 +174,13 @@ void usart1_rx_f(void const * argument)
 
 
 // 引用 balance.c 中的 PID 全局变量（用于更新系数）
-typedef struct {
-    float Target;
-    float Actual;
-    float Kp, Ki, Kd;
-    float Error0, Error1, ErrorInt;
-    float Out, OutMax, OutMin;
-} PID_t;
+//typedef struct {
+//    float Target;
+//    float Actual;
+//    float Kp, Ki, Kd;
+//    float Error0, Error1, ErrorInt;
+//    float Out, OutMax, OutMin;
+//} PID_t;
 
 extern PID_t AnglePID;      // 内环角度环
 extern PID_t LocationPID;   // 外环位置环

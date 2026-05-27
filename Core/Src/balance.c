@@ -36,7 +36,7 @@ void PID_Update(PID_t *p)
 	/*如果Ki不为0，才进行误差积分，这样做的目的是便于调试*/
 	/*因为在调试时，我们可能先把Ki设置为0，这时积分项无作用，误差消除不了，误差积分会积累到很大的值*/
 	/*后续一旦Ki不为0，那么因为误差积分已经积累到很大的值了，这就导致积分项疯狂输出，不利于调试*/
-	if (p->Ki != 0)					//如果Ki不为0
+	if (p->Ki > 0.001f || p->Ki < -0.001f)					//如果Ki不为0
 	{
 		p->ErrorInt += p->Error0;	//进行误差积分
 	}
@@ -54,6 +54,8 @@ void PID_Update(PID_t *p)
 	/*输出限幅*/
 	if (p->Out > p->OutMax) {p->Out = p->OutMax;}	//限制输出值最大为结构体指定的OutMax
 	if (p->Out < p->OutMin) {p->Out = p->OutMin;}	//限制输出值最小为结构体指定的OutMin
+	if (p->ErrorInt > p->OutMax / p->Ki) p->ErrorInt = p->OutMax / p->Ki;
+	if (p->ErrorInt < p->OutMin / p->Ki) p->ErrorInt = p->OutMin / p->Ki;//防止积分项饱和
 }
 
 PID_t AnglePID = {			//内环角度环PID结构体变量，定义的时候同时给部分成员赋初值
@@ -132,7 +134,7 @@ void balance_f(void const * argument)
 		else						//如果运行状态为0
 		{
 			motor_command.target_speed = 0;
-			xQueueSend(xMotorFeedbackQueue, &motor_command, 0);		//不执行PID程序且电机PWM直接设置为0，电机停止
+			xQueueSend(xMotorCmdQueue, &motor_command, 0);		//不执行PID程序且电机PWM直接设置为0，电机停止
 		}
 		
 		vTaskDelay(pdMS_TO_TICKS(1));
