@@ -40,6 +40,7 @@ typedef struct {
 	int32_t 	encoder_pos;    // 当前编码器累计位置
 	float   	speed_rpm;      // 当前转速（RPM：每分钟转数）
 	uint32_t 	timestamp_ms;  // 采样时间戳（可选）
+	float			angle_deg;			//绝对角度
 }MotorFeedback_t;
 
 //任务函数声明

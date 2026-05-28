@@ -58,12 +58,18 @@ void motor_sensor_f(void const * argument)
 	uint32_t	now;
 	uint32_t	dt;
 	int32_t delta;
+	int32_t raw_angle;
 	
   for(;;)
   {
 		//读取当前编码器值
 		feedback.encoder_pos	= (int32_t)__HAL_TIM_GET_COUNTER(&htim2);
 		feedback.timestamp_ms	= HAL_GetTick();
+		
+		//计算绝对角度
+		raw_angle		= feedback.encoder_pos % ENCODER_PPR;
+		if (raw_angle<0) raw_angle	+= ENCODER_PPR;
+		feedback.angle_deg	= (float)raw_angle * 360.0f / ENCODER_PPR;
 		
 		//计算转速
 		now	= feedback.timestamp_ms;

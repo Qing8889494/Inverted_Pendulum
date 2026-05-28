@@ -221,7 +221,7 @@ void MX_FREERTOS_Init(void) {
   OLEDHandle = osThreadCreate(osThread(OLED), NULL);
 
   /* definition and creation of Angle_sensor */
-  osThreadDef(Angle_sensor, angle_sensor_f, osPriorityIdle, 0, 1024);
+  osThreadDef(Angle_sensor, angle_sensor_f, osPriorityAboveNormal, 0, 1024);
   Angle_sensorHandle = osThreadCreate(osThread(Angle_sensor), NULL);
 
   /* definition and creation of Motor_run */
@@ -229,7 +229,7 @@ void MX_FREERTOS_Init(void) {
 	Motor_runHandle = osThreadCreate(osThread(Motor_run), NULL);
 
   /* definition and creation of Motor_sensor */
-  osThreadDef(Motor_sensor, motor_sensor_f, osPriorityIdle, 0, 512);
+  osThreadDef(Motor_sensor, motor_sensor_f, osPriorityAboveNormal, 0, 512);
   Motor_sensorHandle = osThreadCreate(osThread(Motor_sensor), NULL);
 
   /* definition and creation of Balance */

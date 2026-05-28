@@ -52,7 +52,7 @@ void usart1_tx_f(void const * argument)
      if (xQueueReceive(xMotorFeedbackQueue, &sensor_motor, pdMS_TO_TICKS(10)) == pdPASS)
      {
          // 打印角度和角速度
-			 sprintf(buf, "motor_w: %.2f , motor_step: %d \r\n", sensor_motor.speed_rpm, sensor_motor.encoder_pos);
+			 sprintf(buf, "motor_rpm: %.2f , motor_angle: %.1f , motor_step: %d\r\n", sensor_motor.speed_rpm, sensor_motor.angle_deg, sensor_motor.encoder_pos);
          
        HAL_UART_Transmit(&huart1, (uint8_t *)buf, strlen(buf), 100);
 			 //oled_show("mSpeed", sensor_motor.speed_rpm);
