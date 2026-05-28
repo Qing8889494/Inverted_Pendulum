@@ -182,7 +182,7 @@ void MX_FREERTOS_Init(void) {
 	
 	//创建电机数据的队列
 	xMotorCmdQueue = xQueueCreate(5, sizeof(MotorCmd_t));			//电机命令
-	xMotorFeedbackQueue	= xQueueCreate(10, sizeof(MotorFeedback_t));		//电机编码器数据
+	xMotorFeedbackQueue	= xQueueCreate(1, sizeof(MotorFeedback_t));		//电机编码器数据
 	
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
@@ -193,11 +193,11 @@ void MX_FREERTOS_Init(void) {
 //  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of Usart1_tx */
-  osThreadDef(Usart1_tx, usart1_tx_f, osPriorityBelowNormal, 0, 256);
+  osThreadDef(Usart1_tx, usart1_tx_f, osPriorityIdle, 0, 256);
   Usart1_txHandle = osThreadCreate(osThread(Usart1_tx), NULL);
 
   /* definition and creation of Usart1_rx */
-  osThreadDef(Usart1_rx, usart1_rx_f, osPriorityNormal, 0, 256);
+  osThreadDef(Usart1_rx, usart1_rx_f, osPriorityLow, 0, 256);
   Usart1_rxHandle = osThreadCreate(osThread(Usart1_rx), NULL);
 
   /* definition and creation of Usart2_tx */

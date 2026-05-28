@@ -2,7 +2,8 @@
 /**
   ******************************************************************************
   * 文件名称          : motor.c
-  * 功能描述          : 根据电机命令队列的电机速度来控制PWM输出；
+  * 功能描述          : 根据电机命令队列的电机速度来控制PWM输出；(能让电机空载输
+												出转速的最小speed值是550)
 	*											根据电机编码器获得的数据发送电机的当前转速。
   ******************************************************************************
   * @attention
@@ -79,9 +80,8 @@ void motor_sensor_f(void const * argument)
 			//时间间隔太短，保持上一次转速
 			feedback.speed_rpm	= last_rpm;
 		}
-		if ( xQueueSend(xMotorFeedbackQueue, &feedback, pdMS_TO_TICKS(10)) != pdPASS)
+		if ( xQueueOverwrite(xMotorFeedbackQueue, &feedback) != pdPASS)
 		{
-			
 		}
 		
 		osDelay(5);
@@ -109,23 +109,22 @@ void motor_set_speed(int16_t speed)
 {
 	//电机速度范围为-1000~1000
 	uint16_t	duty;		//占空比的值
-	if (speed>0)
+	if (speed<0)
 	{
-		duty = (uint16_t)((int32_t)speed * PWM_PERIOD / 1000);
+		duty = (uint16_t)((int32_t)-speed * PWM_PERIOD / 1000);
 		if (duty > PWM_PERIOD) duty = PWM_PERIOD;
     __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, duty);
     __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 0);
 	}
-	else if(speed<0)
+	else if(speed>0)
 	{
-		duty = (uint16_t)((int32_t)(-speed) * PWM_PERIOD / 1000);
+		duty = (uint16_t)((int32_t)(speed) * PWM_PERIOD / 1000);
 		if (duty > PWM_PERIOD) duty = PWM_PERIOD;
     __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 0);
     __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, duty);
 	}
 	else
 	{
-			LED_On(LED3_Pin);
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 0);
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 0);
 	}

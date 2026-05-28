@@ -25,7 +25,7 @@
 #include "tim.h"
 
 #define PWM_PERIOD	2099		//TIM3的自动重载值
-#define ENCODER_PPR	1560		//电机转一圈输出的计数数量
+#define ENCODER_PPR	1560		//电机转一圈编码器输出的计数数量
 
 extern QueueHandle_t	xMotorCmdQueue;
 extern QueueHandle_t xMotorFeedbackQueue;
@@ -38,7 +38,7 @@ typedef struct {
 
 typedef struct {
 	int32_t 	encoder_pos;    // 当前编码器累计位置
-	float   	speed_rpm;      // 当前转速（RPM）
+	float   	speed_rpm;      // 当前转速（RPM：每分钟转数）
 	uint32_t 	timestamp_ms;  // 采样时间戳（可选）
 }MotorFeedback_t;
 

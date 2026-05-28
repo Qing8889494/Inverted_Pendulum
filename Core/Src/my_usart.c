@@ -16,6 +16,7 @@
 	*						增加串口2 SerialPlot 波形发送（向思嘉，2026.5.25）
   *           增加串口3 PID 参数接收（向思嘉，2026.5.25）
 	*						用串口1的收数据，来接收电脑端发送的电机速度指令：@v 300 （韩庆，2026.5.24）
+	*						用串口1的发数据，来调试电机的编码器数据（2026.5.28）
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -40,35 +41,24 @@ static uint8_t uart1_rx_idx = 0;                 // 缓冲索引
 void usart1_tx_f(void const * argument)
 {
 	
-	Sensor_Data_Typedef sensor_data;
+	//Sensor_Data_Typedef sensor_data;
+	MotorFeedback_t sensor_motor;
 	char buf[128];
 	
   for(;;)
   {
-     vTaskDelay(pdMS_TO_TICKS(100));
+     vTaskDelay(pdMS_TO_TICKS(1000));
 
-     if (xQueuePeek(xSensorQueue, &sensor_data, 0) == pdPASS)
+     if (xQueueReceive(xMotorFeedbackQueue, &sensor_motor, pdMS_TO_TICKS(10)) == pdPASS)
      {
          // 打印角度和角速度
-         sprintf(buf, "a1:%.1f  w1:%.1f   | a2:%.1f  w2:%.1f  \r\n",
-                 sensor_data.angle1, sensor_data.angular_velocity1,
-                 sensor_data.angle2, sensor_data.angular_velocity2);
+			 sprintf(buf, "motor_w: %.2f , motor_step: %d \r\n", sensor_motor.speed_rpm, sensor_motor.encoder_pos);
          
-         HAL_UART_Transmit(&huart1, (uint8_t *)buf, strlen(buf), 100);
+       HAL_UART_Transmit(&huart1, (uint8_t *)buf, strlen(buf), 100);
+			 //oled_show("mSpeed", sensor_motor.speed_rpm);
      }
   }
 	
-	/*
-	MotorFeedback_t sensor_motor;
-	
-	for(;;)
-	{
-		if (xQueueReceive(xMotorFeedbackQueue, &sensor_motor, 0)== pdPASS)
-		{
-			//oled_show("Mspeed", sensor_motor.speed_rpm);
-		}
-	}
-	*/
 }
 
 //任务函数定义
@@ -94,6 +84,7 @@ void usart1_rx_f(void const * argument)
         case '\n':
           uart1_rx_buf[uart1_rx_idx] = '\0'; // 字符串结束符
           
+				/*
 				// ----- 调试：打印接收缓冲区原始数据 -----
     {
         char dbg_buf[20];
@@ -117,12 +108,12 @@ void usart1_rx_f(void const * argument)
         HAL_UART_Transmit(&huart1, (uint8_t*)dbg_buf, len, 100);
     }
     // ----- 调试结束 -----
+		*/
 				
           // 解析指令：@v 300 （格式检查：长度≥4、@v+空格开头）
           if (uart1_rx_idx >= 4 && uart1_rx_buf[0] == '@' && 
               uart1_rx_buf[1] == 'v' && uart1_rx_buf[2] == ' ')
           {
-
             // 提取空格后的速度数值（转换为int）
             speed = atoi((char *)&uart1_rx_buf[3]);
             
