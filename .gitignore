@@ -1,0 +1,18 @@
+# Keil MDK 自动生成的配置文件（永远不提交）
+*.uvoptx
+*.uvprojx
+*.uvgui.*
+RTE/
+*.dep
+*.build_log
+*.htm
+*.map
+*.obj
+*.hex
+*.axf
+*.lib
+*.bak
+*.lnp
+*.sct
+MDK-ARM/Listings/
+MDK-ARM/Objects/
