@@ -40,7 +40,6 @@ static uint8_t uart1_rx_idx = 0;                 // 缓冲索引
 //任务函数定义
 void usart1_tx_f(void const * argument)
 {
-	
 	//Sensor_Data_Typedef sensor_data;
 	MotorFeedback_t sensor_motor;
 	char buf[128];
@@ -58,7 +57,6 @@ void usart1_tx_f(void const * argument)
 			 //oled_show("mSpeed", sensor_motor.speed_rpm);
      }
   }
-	
 }
 
 //任务函数定义

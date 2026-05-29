@@ -70,6 +70,14 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+	
+	 /* ========== 新增：配置 PC8 为下拉输入 ========== */
+  GPIO_InitStruct.Pin = GPIO_PIN_8;          // PC8
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;    // 输入模式
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;      // 下拉
+  /* 输入模式无需配置 Speed */
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+  /* ========================================== */
 
 }
 

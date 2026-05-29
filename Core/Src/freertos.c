@@ -72,7 +72,6 @@ osThreadId BalanceHandle;
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-
 /* USER CODE END FunctionPrototypes */
 
 /*这里的函数声明我们放在了各自的代码文件里面，已经上名已经引入了头文件*/
