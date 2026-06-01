@@ -11,7 +11,7 @@
   *
   * 作    者：高愉坤
   * 创建时间：2026.5.24
-  * 修改记录：
+  * 修改记录：添加了启动判断 （周南全 2026.6.1）
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -54,8 +54,12 @@ void PID_Update(PID_t *p)
 	/*输出限幅*/
 	if (p->Out > p->OutMax) {p->Out = p->OutMax;}	//限制输出值最大为结构体指定的OutMax
 	if (p->Out < p->OutMin) {p->Out = p->OutMin;}	//限制输出值最小为结构体指定的OutMin
-	if (p->ErrorInt > p->OutMax / p->Ki) p->ErrorInt = p->OutMax / p->Ki;
-	if (p->ErrorInt < p->OutMin / p->Ki) p->ErrorInt = p->OutMin / p->Ki;//防止积分项饱和
+	
+	if(p->Ki != 0) //防止除以零造成程序死机
+	{
+		if (p->ErrorInt > p->OutMax / p->Ki) p->ErrorInt = p->OutMax / p->Ki;
+		if (p->ErrorInt < p->OutMin / p->Ki) p->ErrorInt = p->OutMin / p->Ki;
+	}
 }
 
 PID_t AnglePID = {			//内环角度环PID结构体变量，定义的时候同时给部分成员赋初值
@@ -84,15 +88,19 @@ Sensor_Data_Typedef angle;	//这里得到第一个角度的数据
 MotorFeedback_t motor_sensor;//这里得到电机的数据
 MotorCmd_t motor_command;	//这里是用于回传的
 
-uint8_t RunState;			//表示倒立摆运行状态
+volatile uint8_t RunState;			//表示倒立摆运行状态
 
 //任务函数定义
 void balance_f(void const * argument)
 {
 	
+	static uint16_t Count1, Count2;
+	
 	for(;;)
 	{	
-		static uint16_t Count1, Count2;
+		
+		xQueueReceive(xSensorQueue, &angle, 0);
+		xQueueReceive(xMotorFeedbackQueue, &motor_sensor, 0);
 		
 		/*摆杆倒下自动停止PID程序*/
 		if (! (angle.angle1 > CENTER_ANGLE - CENTER_RANGE
@@ -100,7 +108,6 @@ void balance_f(void const * argument)
 		{
 			RunState = 0;			//运行状态变量置0，自动停止PID程序
 		}
-		
 		
 				/*根据运行状态执行PID程序或者停止*/
 		if (RunState)				//如果运行状态不为0
@@ -120,7 +127,7 @@ void balance_f(void const * argument)
 			
 			/*位置环计次分频*/
 			Count2 ++;				//计次自增
-			if (Count2 >= 50)		//如果计次50次，则if成立，即if每隔50ms进一次
+			if (Count2 >= 25)		//如果计次50次，则if成立，即if每隔50ms进一次
 			{
 				Count2 = 0;			//计次清零，便于下次计次
 				
@@ -145,15 +152,25 @@ void balance_f(void const * argument)
 void set_f(void const * argument)
 {
 	
+	GPIO_PinState key_now;    // 当前按键电平
+  static uint8_t key_last = 0; // 上次按键状态
   
 	for(;;)
 	{
+		
+		key_now = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8);
 		/*控制启动*/
-		if (1)			//留出判断条件
+		if (key_last == GPIO_PIN_RESET && key_now == GPIO_PIN_SET)			//留出判断条件
 		{
-			RunState = !RunState;	//运行状态取非，用于控制程序启动和停止
+			osDelay(20);
+			
+			if(HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8) == GPIO_PIN_SET)
+      {
+        RunState = !RunState;  // 翻转启停状态：按一下开，再按一下关
+      }
 		}
 		
+		key_last = key_now;
 		
 		/*LED指示程序运行状态*/
 		if (RunState)		//如果运行状态非0
@@ -164,11 +181,6 @@ void set_f(void const * argument)
 		{
 			LED_Off(LED1_Pin);		//熄灭LED，指示程序停止运行
 		}
-		
-		//这里不断读取传感器的值以及位置
-		
-		xQueuePeek(xSensorQueue, &angle, 0);
-		xQueuePeek(xMotorFeedbackQueue, &motor_sensor, 0);
 	  
 		osDelay(1);
 	}

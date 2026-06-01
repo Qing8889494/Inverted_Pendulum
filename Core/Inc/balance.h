@@ -22,6 +22,7 @@
 
 //任务函数声明
 void balance_f(void const * argument);
+void set_f(void const * argument);
 //其它函数声明
 typedef struct {
 	float Target;

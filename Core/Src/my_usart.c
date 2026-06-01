@@ -15,8 +15,9 @@
 	*						用串口2的收数据，来接收电脑端发送的电机速度指令：@v 300
 	*						增加串口2 SerialPlot 波形发送（向思嘉，2026.5.25）
   *           增加串口3 PID 参数接收（向思嘉，2026.5.25）
-	*						用串口1的收数据，来接收电脑端发送的电机速度指令：@v 300 （韩庆，2026.5.24）
+	*						用串口1的收数据，来接收电脑端发送的电机速度指令：韩庆，2026.5.24
 	*						用串口1的发数据，来调试电机的编码器数据（2026.5.28）
+	*						优化了串口2发送波形的代码，把串口3接收到的PID参数传到了flash里面，防止掉电重置（周南全 2026.6.1）
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -32,6 +33,77 @@
 #include "led.h"
 #include "my_oled.h"
 #include "balance.h"
+
+#include "stm32f4xx_hal_flash.h"
+
+#define PID_PARAM_FLASH_ADDR    0x0807F000U  
+
+typedef struct
+{
+    float inner_kp;
+    float inner_ki;
+    float inner_kd;
+    float outer_kp;
+    float outer_ki;
+    float outer_kd;
+} PID_Store_t;
+
+extern PID_t AnglePID;
+extern PID_t LocationPID;
+
+static void PID_Flash_Write(PID_Store_t *pParam)
+{
+    HAL_FLASH_Unlock();
+
+    FLASH_EraseInitTypeDef eraseInit = {0};
+    uint32_t pageError = 0;
+    eraseInit.TypeErase    = FLASH_TYPEERASE_SECTORS;
+    eraseInit.Sector       = FLASH_SECTOR_11;
+    eraseInit.NbSectors    = 1;
+    eraseInit.VoltageRange = FLASH_VOLTAGE_RANGE_3;
+    HAL_FLASHEx_Erase(&eraseInit, &pageError);
+
+    uint32_t *pSrc = (uint32_t *)pParam;
+    for(uint16_t i = 0; i < sizeof(PID_Store_t) / 4; i++)
+    {
+        HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, PID_PARAM_FLASH_ADDR + i*4, pSrc[i]);
+    }
+
+    HAL_FLASH_Lock();
+}
+
+static void PID_Flash_Read(PID_Store_t *pParam)
+{
+    memcpy(pParam, (void *)PID_PARAM_FLASH_ADDR, sizeof(PID_Store_t));
+}
+
+void PID_Load_From_Flash(void)
+{
+    PID_Store_t tmp;
+    PID_Flash_Read(&tmp);
+
+    taskENTER_CRITICAL();
+    AnglePID.Kp    = tmp.inner_kp;
+    AnglePID.Ki    = tmp.inner_ki;
+    AnglePID.Kd    = tmp.inner_kd;
+    LocationPID.Kp = tmp.outer_kp;
+    LocationPID.Ki = tmp.outer_ki;
+    LocationPID.Kd = tmp.outer_kd;
+    taskEXIT_CRITICAL();
+}
+
+void PID_Save_To_Flash(void)
+{
+    PID_Store_t tmp;
+    tmp.inner_kp  = AnglePID.Kp;
+    tmp.inner_ki  = AnglePID.Ki;
+    tmp.inner_kd  = AnglePID.Kd;
+    tmp.outer_kp  = LocationPID.Kp;
+    tmp.outer_ki  = LocationPID.Ki;
+    tmp.outer_kd  = LocationPID.Kd;
+    PID_Flash_Write(&tmp);
+}
+
 
 #define UART1_RX_BUF_SIZE 32
 static uint8_t uart1_rx_buf[UART1_RX_BUF_SIZE];  // 接收缓冲
@@ -163,14 +235,6 @@ void usart1_rx_f(void const * argument)
 
 
 // 引用 balance.c 中的 PID 全局变量（用于更新系数）
-//typedef struct {
-//    float Target;
-//    float Actual;
-//    float Kp, Ki, Kd;
-//    float Error0, Error1, ErrorInt;
-//    float Out, OutMax, OutMin;
-//} PID_t;
-
 extern PID_t AnglePID;      // 内环角度环
 extern PID_t LocationPID;   // 外环位置环
 
@@ -203,7 +267,7 @@ void usart2_tx_f(void const * argument)
         // 获取传感器数据（角度、角速度）
         if (xQueuePeek(xSensorQueue, &sensor_data, 0) != pdPASS)
         {
-            osDelay(10);
+            osDelay(20);
             continue;
         }
         // 获取电机当前目标速度
@@ -231,7 +295,7 @@ void usart2_tx_f(void const * argument)
 				// 通过串口2发送
         HAL_UART_Transmit(&huart2, (uint8_t*)tx_buf, ptr - tx_buf, 100);
 
-        // 发送间隔 20ms（可根据需要调整）
+        // 发送间隔 20ms
         osDelay(20);
 			}
 }
@@ -326,9 +390,11 @@ static void PIDUpdateTask(void *pvParameters)
             }
             taskEXIT_CRITICAL();
 
-            // 通过串口1发送确认（注意：与串口1其他任务存在竞争，
-            // 仅影响调试打印，不影响控制逻辑，可按需删除此行）
-            char ack[] = "PID updated via queue\r\n";
+            // 新增：PID参数更新后自动保存到Flash，断电不丢失
+            PID_Save_To_Flash();
+
+            // 通过串口1发送确认
+            char ack[] = "PID updated & saved\r\n";
             HAL_UART_Transmit(&huart1, (uint8_t*)ack, strlen(ack), 100);
         }
     }
@@ -336,20 +402,17 @@ static void PIDUpdateTask(void *pvParameters)
 
 /* ==========================================================================
  * USART_Init — 统一初始化函数
- *
- * 在 main.c 中，将原来的：
- *   USART3_InitQueue();
- * 替换为：
- *   USART_Init();
- * 必须在 osKernelStart() 之前调用。
  * ========================================================================== */
 void USART_Init(void)
 {
-    // 创建 PID 队列（长度1，覆盖模式）
+    // 新增：开机自动加载Flash中保存的PID参数
+    PID_Load_From_Flash();
+
+    // 创建 PID 队列
     xPIDQueue = xQueueCreate(1, sizeof(PID_Params_t));
     configASSERT(xPIDQueue != NULL);
 
-    // 创建 PID 更新任务（优先级2，低于平衡控制任务）
+    // 创建 PID 更新任务
     BaseType_t ret = xTaskCreate(PIDUpdateTask, "PIDUpd", 256, NULL, 2, NULL);
     configASSERT(ret == pdPASS);
 }

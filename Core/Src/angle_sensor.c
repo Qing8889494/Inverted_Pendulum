@@ -11,7 +11,7 @@
   *
   * 作    者：周南全
   * 创建时间：2026年5月23日
-  * 修改记录：
+  * 修改记录：把传感器的采集时间改成了5ms （周南全 2026.6.1）
   ******************************************************************************
   */
 /* USER CODE END Header */
@@ -70,8 +70,8 @@ void angle_sensor_f(void const * argument)
         // 发送给控制任务
         xQueueOverwrite(xSensorQueue, &sensor_data);
 
-        // 10ms采集一次
-        vTaskDelay(pdMS_TO_TICKS(10));
+        // 5ms采集一次
+        vTaskDelay(pdMS_TO_TICKS(5));
     }
  
 }

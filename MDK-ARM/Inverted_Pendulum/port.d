@@ -1,7 +1,7 @@
 inverted_pendulum\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F/port.c
 inverted_pendulum\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-inverted_pendulum\port.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
-inverted_pendulum\port.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
+inverted_pendulum\port.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
+inverted_pendulum\port.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
 inverted_pendulum\port.o: ../Core/Inc/FreeRTOSConfig.h
 inverted_pendulum\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 inverted_pendulum\port.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
