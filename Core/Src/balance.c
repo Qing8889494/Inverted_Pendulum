@@ -26,6 +26,10 @@
 #define CENTER_ANGLE		0		//这个是角度的中心位置
 #define CENTER_RANGE		60		//这个是角度中心范围
 
+// 完成调参之后进行使用
+//#define START_PWM       600     // 起摆电机力度 (参考:35/100, 你这边范围0-1000, 对应约600)
+//#define START_TIME      100     // 起摆瞬时驱动力持续时间(ms) (与参考一致)
+
 void PID_Update(PID_t *p)
 {
 	/*获取本次误差和上次误差*/
@@ -88,7 +92,7 @@ Sensor_Data_Typedef angle;	//这里得到第一个角度的数据
 MotorFeedback_t motor_sensor;//这里得到电机的数据
 MotorCmd_t motor_command;	//这里是用于回传的
 
-volatile uint8_t RunState;			//表示倒立摆运行状态
+volatile uint8_t RunState;			//表示倒立摆运行状态，0=停止, 1=判断状态, 21-24=向左泵, 31-34=向右泵, 4=平衡
 
 //任务函数定义
 void balance_f(void const * argument)
@@ -148,6 +152,170 @@ void balance_f(void const * argument)
 	}
   
 }
+//	这段是带有自动起摆的任务函数，在完成调参之后进行使用
+//  void balance_f(void const * argument)
+//  {
+//      /* 起摆相关静态变量 */
+//      static uint16_t CountJudge;             // 判断状态计次(40ms间隔)
+//      static float Angle0, Angle1, Angle2;    // 本次、上次、上上次角度
+//      static uint16_t CountTime;              // 起摆计时
+//      static uint16_t Count1, Count2;         // PID分频计数
+//      float norm_angle;
+
+//      for(;;)
+//      {
+//          xQueueReceive(xSensorQueue, &angle, 0);
+//          xQueueReceive(xMotorFeedbackQueue, &motor_sensor, 0);
+
+//          /* 角度规一化到 [-180, 180]，0 = 竖直向上 */
+//          norm_angle = angle.angle1;
+//          while (norm_angle > 180.0f)  norm_angle -= 360.0f;
+//          while (norm_angle < -180.0f) norm_angle += 360.0f;
+
+//          /**************** 状态机调度 ****************/
+//          if (RunState == 0)          // 停止
+//          {
+//              motor_command.target_speed = 0;
+//              xQueueSend(xMotorCmdQueue, &motor_command, 0);
+//          }
+//          else if (RunState == 1)     // 判断状态：检测摆杆峰值点
+//          {
+//              CountJudge++;
+//              if (CountJudge >= 40)   // 每40ms采样一次
+//              {
+//                  CountJudge = 0;
+
+//                  /* 滑动更新3次角度值 */
+//                  Angle2 = Angle1;
+//                  Angle1 = Angle0;
+//                  Angle0 = norm_angle;
+
+//                  /* 判断是否在右侧最高点（即将向左摆）：中间值最小 → 向左推 */
+//                  if (Angle0 > CENTER_RANGE
+//                   && Angle1 > CENTER_RANGE
+//                   && Angle2 > CENTER_RANGE
+//                   && Angle1 < Angle0
+//                   && Angle1 < Angle2)
+//                  {
+//                      RunState = 21;  // 进入向左泵序列
+//                  }
+
+//                  /* 判断是否在左侧最高点（即将向右摆）：中间值最大 → 向右推 */
+//                  if (Angle0 < -CENTER_RANGE
+//                   && Angle1 < -CENTER_RANGE
+//                   && Angle2 < -CENTER_RANGE
+//                   && Angle1 > Angle0
+//                   && Angle1 > Angle2)
+//                  {
+//                      RunState = 31;  // 进入向右泵序列
+//                  }
+
+//                  /* 判断是否已进入平衡捕捉区间 */
+//                  if (Angle0 > -SWITCH_ANGLE      // 自行定义 SWITCH_ANGLE 45
+//                   && Angle0 < SWITCH_ANGLE
+//                   && Angle1 > -SWITCH_ANGLE
+//                   && Angle1 < SWITCH_ANGLE)
+//                  {
+//                      /* 变量归零 */
+//                      LocationPID.ErrorInt = 0;
+//                      AnglePID.ErrorInt = 0;
+//                      AnglePID.Target = CENTER_ANGLE;
+
+//                      RunState = 4;   // 切换到PID平衡
+//                  }
+//              }
+//          }
+//          else if (RunState == 21)    // 向左泵：电机左转
+//          {
+//              motor_command.target_speed = START_PWM;
+//              xQueueSend(xMotorCmdQueue, &motor_command, 0);
+//              CountTime = START_TIME;
+//              RunState = 22;
+//          }
+//          else if (RunState == 22)    // 向左泵：持续计时
+//          {
+//              CountTime--;
+//              if (CountTime == 0) RunState = 23;
+//          }
+//          else if (RunState == 23)    // 向左泵：电机右转
+//          {
+//              motor_command.target_speed = -START_PWM;
+//              xQueueSend(xMotorCmdQueue, &motor_command, 0);
+//              CountTime = START_TIME;
+//              RunState = 24;
+//          }
+//          else if (RunState == 24)    // 向左泵：持续计时
+//          {
+//              CountTime--;
+//              if (CountTime == 0)
+//              {
+//                  motor_command.target_speed = 0;
+//                  xQueueSend(xMotorCmdQueue, &motor_command, 0);
+//                  RunState = 1;       // 回到判断状态
+//              }
+//          }
+//          else if (RunState == 31)    // 向右泵：电机右转
+//          {
+//              motor_command.target_speed = -START_PWM;
+//              xQueueSend(xMotorCmdQueue, &motor_command, 0);
+//              CountTime = START_TIME;
+//              RunState = 32;
+//          }
+//          else if (RunState == 32)    // 向右泵：持续计时
+//          {
+//              CountTime--;
+//              if (CountTime == 0) RunState = 33;
+//          }
+//          else if (RunState == 33)    // 向右泵：电机左转
+//          {
+//              motor_command.target_speed = START_PWM;
+//              xQueueSend(xMotorCmdQueue, &motor_command, 0);
+//              CountTime = START_TIME;
+//              RunState = 34;
+//          }
+//          else if (RunState == 34)    // 向右泵：持续计时
+//          {
+//              CountTime--;
+//              if (CountTime == 0)
+//              {
+//                  motor_command.target_speed = 0;
+//                  xQueueSend(xMotorCmdQueue, &motor_command, 0);
+//                  RunState = 1;       // 回到判断状态
+//              }
+//          }
+//          else if (RunState == 4)     // PID平衡控制
+//          {
+//              /* 摔倒保护 */
+//              if (!(norm_angle > -CENTER_RANGE && norm_angle < CENTER_RANGE))
+//              {
+//                  RunState = 0;       // 停止
+//              }
+
+//              /* 角度环 5ms */
+//              Count1++;
+//              if (Count1 >= 5)
+//              {
+//                  Count1 = 0;
+//                  AnglePID.Actual = angle.angle1;
+//                  PID_Update(&AnglePID);
+//                  motor_command.target_speed = (int16_t)AnglePID.Out;
+//                  xQueueSend(xMotorCmdQueue, &motor_command, 0);
+//              }
+
+//              /* 位置环 25ms */
+//              Count2++;
+//              if (Count2 >= 25)
+//              {
+//                  Count2 = 0;
+//                  LocationPID.Actual = motor_sensor.encoder_pos;
+//                  PID_Update(&LocationPID);
+//                  AnglePID.Target = CENTER_ANGLE - LocationPID.Out;
+//              }
+//          }
+
+//          vTaskDelay(pdMS_TO_TICKS(1));
+//      }
+//  }
 
 void set_f(void const * argument)
 {
@@ -186,4 +354,39 @@ void set_f(void const * argument)
 	}
   
 }
+
+
+//	这段是带有自动起摆的任务函数，在完成调参之后进行使用
+//  void set_f(void const * argument)
+//  {
+//      GPIO_PinState key_now;
+//      static uint8_t key_last = 0;
+
+//      for(;;)
+//      {
+//          key_now = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8);
+
+//          if (key_last == GPIO_PIN_RESET && key_now == GPIO_PIN_SET)
+//          {
+//              osDelay(20);
+//              if (HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_8) == GPIO_PIN_SET)
+//              {
+//                  if (RunState == 0)
+//                      RunState = 21;      // 按键启动 → 开始起摆
+//                                      // 从21开始，先来一下向左推，让摆杆离开盲区
+//                  else
+//                      RunState = 0;       // 再按停止
+//              }
+//          }
+
+//          key_last = key_now;
+
+//          if (RunState)
+//              LED_On(LED1_Pin);
+//          else
+//              LED_Off(LED1_Pin);
+
+//          osDelay(1);
+//      }
+//  }
 

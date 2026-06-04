@@ -42,3 +42,25 @@ typedef struct {
 } PID_t;
 
 #endif
+
+// 完成pid调参之后使用
+
+// #ifndef __BALANCE_H
+//  #define __BALANCE_H
+
+//  #include <stdint.h>
+
+//  void balance_f(void const * argument);
+//  void set_f(void const * argument);
+
+//  typedef struct {
+//      float Target;
+//      float Actual;
+//      float Out;
+//      float Kp, Ki, Kd;
+//      float Error0, Error1, ErrorInt;
+//      float OutMax, OutMin;
+//  } PID_t;
+
+//  #endif
+
