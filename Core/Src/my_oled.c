@@ -14,23 +14,24 @@
 #include "cmsis_os.h"
 #include <stdio.h>
 #include <string.h>
+#include <ctype.h>
 #include "i2c.h"
 #include "oled.h"
-/* 包含需要访问的数据模块头文件 */
-#include "angle_sensor.h"   // 提供 Sensor_Data_Typedef, xSensorQueue
-#include "motor.h"          // 提供 xMotorFeedbackQueue, MotorFeedback_t
-#include "balance.h"        // 提供 RunState
-/* ========== 全局变量（保留，若无调用则不会影响） ========== */
+/* 数据来源头文件 */
+#include "angle_sensor.h"
+#include "motor.h"
+#include "balance.h"
+/* ========== 全局命令缓冲区（保留，但不再被任务使用） ========== */
 #define OLED_CMD_BUF_SIZE   32
 volatile char   oled_cmd_str[OLED_CMD_BUF_SIZE];
 volatile uint8_t oled_cmd_new = 0;
-/* 旧推送接口（保留，兼容之前可能存在的调用） */
+/* 旧的推送接口（保留，以避免其他文件编译错误） */
 void oled_show(const char *label, float value)
 {
     snprintf((char *)oled_cmd_str, OLED_CMD_BUF_SIZE, "%s:%.2f", label, value);
     oled_cmd_new = 1;
 }
-/* ========== 类型定义（提升到文件作用域） ========== */
+/* ========== 内部类型 ========== */
 typedef struct {
     char    label[16];
     float   value;
@@ -40,30 +41,46 @@ typedef struct {
     float   value;
     uint8_t active;
 } DisplayItem_t;
-/* ========== 辅助函数：更新或插入一个显示项 ========== */
-static void update_item(DisplayItem_t items[], uint8_t *count, 
+/* ========== 安全的字符串比较（忽略大小写） ========== */
+static int str_cmp_nocase(const char *a, const char *b)
+{
+    while (*a && *b) {
+        if (tolower((unsigned char)*a) != tolower((unsigned char)*b))
+            return 1;
+        a++; b++;
+    }
+    return (*a == *b) ? 0 : 1;
+}
+/* ========== 更新或插入一个显示项 ========== */
+static void update_item(DisplayItem_t items[], uint8_t *count,
                         const char *label, float value, uint8_t max_items)
 {
+    /* 查找是否已存在 */
     for (uint8_t i = 0; i < *count; i++) {
-        if (strcasecmp(items[i].label, label) == 0) {
+        if (str_cmp_nocase(items[i].label, label) == 0) {
             items[i].value = value;
             return;
         }
     }
+    /* 新增 */
     if (*count < max_items) {
         uint8_t idx = (*count)++;
         strncpy(items[idx].label, label, sizeof(items[idx].label) - 1);
+        items[idx].label[sizeof(items[idx].label) - 1] = '\0';
         items[idx].value = value;
         items[idx].active = 1;
-        // 首字母大写
-        if (items[idx].label[0] >= 'a' && items[idx].label[0] <= 'z')
-            items[idx].label[0] -= 32;
+        /* 首字母转大写，其余小写 */
+        for (int j = 0; items[idx].label[j]; j++) {
+            if (j == 0)
+                items[idx].label[j] = toupper((unsigned char)items[idx].label[j]);
+            else
+                items[idx].label[j] = tolower((unsigned char)items[idx].label[j]);
+        }
     }
 }
-/* ========== OLED 显示任务（主动获取 + 自动翻页） ========== */
+/* ========== OLED 任务 ========== */
 void oled_f(void const * argument)
 {
-    /* ---------- 可调参数 ---------- */
     #define MAX_VISIBLE_ROWS   4
     #define MAX_TOTAL_ITEMS    12
     #define STR_BUF_SIZE       32
@@ -79,7 +96,7 @@ void oled_f(void const * argument)
     static uint8_t       need_refresh = 1;
     char line_buf[STR_BUF_SIZE];
     uint8_t y;
-    /* 一次性软件初始化 */
+    /* 启动屏幕 */
     if (first_run) {
         OLED_Init();
         HAL_Delay(50);
@@ -94,9 +111,10 @@ void oled_f(void const * argument)
         need_refresh = 1;
     }
     for (;;) {
-        /* 1. 主动获取数据（每500ms一次） */
+        /* 1. 主动数据获取（500ms） */
         if (HAL_GetTick() - last_update_tick > 500) {
             last_update_tick = HAL_GetTick();
+            // 从传感器队列 Peek（不删除）
             Sensor_Data_Typedef sensor;
             if (xQueuePeek(xSensorQueue, &sensor, 0) == pdTRUE) {
                 update_item(items, &item_count, "Angle1", (float)sensor.angle1, MAX_TOTAL_ITEMS);
@@ -104,17 +122,19 @@ void oled_f(void const * argument)
                 update_item(items, &item_count, "AVel1",  (float)sensor.angular_velocity1, MAX_TOTAL_ITEMS);
                 update_item(items, &item_count, "AVel2",  (float)sensor.angular_velocity2, MAX_TOTAL_ITEMS);
             }
+            // 从电机反馈队列 Peek
             MotorFeedback_t motor_fb;
             if (xQueuePeek(xMotorFeedbackQueue, &motor_fb, 0) == pdTRUE) {
                 update_item(items, &item_count, "Speed",  (float)motor_fb.speed_rpm, MAX_TOTAL_ITEMS);
                 update_item(items, &item_count, "EncPos", (float)motor_fb.encoder_pos, MAX_TOTAL_ITEMS);
                 update_item(items, &item_count, "AngleM", (float)motor_fb.angle_deg, MAX_TOTAL_ITEMS);
             }
+            // 运行状态
             extern volatile uint8_t RunState;
             update_item(items, &item_count, "RunState", (float)RunState, MAX_TOTAL_ITEMS);
-            need_refresh = 1;
+            need_refresh = 1;   // 标记重绘
         }
-        /* 2. 自动翻页（每3秒翻一页） */
+        /* 2. 自动翻页（3秒） */
         if (HAL_GetTick() - last_scroll_tick > 3000) {
             last_scroll_tick = HAL_GetTick();
             if (item_count > MAX_VISIBLE_ROWS) {
@@ -127,11 +147,11 @@ void oled_f(void const * argument)
         }
         /* 3. 刷新屏幕 */
         if (need_refresh) {
-            // 清空当前可见行
+            // 清空可见行
             for (y = 0; y < MAX_VISIBLE_ROWS; y++) {
                 OLED_ShowStr(0, y * 2, "               ", FONT_SIZE);
             }
-            // 显示本页数据
+            // 显示当前页
             for (uint8_t i = 0; i < MAX_VISIBLE_ROWS; i++) {
                 uint8_t idx = scroll_offset + i;
                 if (idx >= item_count) break;

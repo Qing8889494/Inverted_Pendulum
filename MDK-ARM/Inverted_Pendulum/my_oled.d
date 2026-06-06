@@ -53,6 +53,7 @@ inverted_pendulum\my_oled.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/
 inverted_pendulum\my_oled.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 inverted_pendulum\my_oled.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
 inverted_pendulum\my_oled.o: F:\keil5\ARM\ARMCC\Bin\..\include\string.h
+inverted_pendulum\my_oled.o: F:\keil5\ARM\ARMCC\Bin\..\include\ctype.h
 inverted_pendulum\my_oled.o: ../Core/Inc/i2c.h
 inverted_pendulum\my_oled.o: ../Core/Inc/oled.h
 inverted_pendulum\my_oled.o: ../Core/Inc/angle_sensor.h
