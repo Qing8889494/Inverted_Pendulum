@@ -105,7 +105,8 @@ int main(void)
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 	HAL_ADC_Start_DMA(&hadc1, (uint32_t*)adc_raw, ADC_CHANNEL_NUM);
-  USART_Init();
+	
+  USART_Init();          //***********************增加了一个初始化********************************
 	/* USER CODE END 2 */
 	
   /* Call init function for freertos objects (in cmsis_os2.c) */
@@ -209,10 +210,8 @@ void Error_Handler(void)
   __disable_irq();
   while (1)
   {
-	    LED_On(LED1_Pin); // 替换成你的板载LED引脚
-		HAL_Delay(200);
-		LED_Toggle(LED1_Pin); // 替换成你的板载LED引脚
-		HAL_Delay(200);
+		LED_Toggle(LED3_Pin);
+		HAL_Delay(500);
   }
   /* USER CODE END Error_Handler_Debug */
 }

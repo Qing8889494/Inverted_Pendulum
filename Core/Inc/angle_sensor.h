@@ -36,7 +36,7 @@
 #define A2_VERTICAL_MID  2730.0f
 
 //采样周期
-#define SAMPLE_PERIOD   0.01f
+#define SAMPLE_PERIOD   0.005f
 
 // 外部声明
 extern volatile uint16_t adc_raw[];

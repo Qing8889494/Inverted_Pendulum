@@ -82,14 +82,14 @@ void PID_Load_From_Flash(void)
     PID_Store_t tmp;
     PID_Flash_Read(&tmp);
 
-    taskENTER_CRITICAL();
+//    taskENTER_CRITICAL();  调度器启用前不能调用临界区函数
     AnglePID.Kp    = tmp.inner_kp;
     AnglePID.Ki    = tmp.inner_ki;
     AnglePID.Kd    = tmp.inner_kd;
     LocationPID.Kp = tmp.outer_kp;
     LocationPID.Ki = tmp.outer_ki;
     LocationPID.Kd = tmp.outer_kd;
-    taskEXIT_CRITICAL();
+//    taskEXIT_CRITICAL();
 }
 
 void PID_Save_To_Flash(void)

@@ -22,10 +22,13 @@
 #include "motor.h"
 #include "led.h"
 #include "my_oled.h"
+#include "angle_sensor.h"
 
 
 QueueHandle_t	xMotorCmdQueue;				//接收命令队列
 QueueHandle_t xMotorFeedbackQueue;	//发送反馈队列
+
+
 
 //任务函数定义
 void motor_run_f(void const * argument)
@@ -41,6 +44,7 @@ void motor_run_f(void const * argument)
 		{
 			//设置目标速度
 			motor_set_speed(cmd.target_speed);
+			
 			//oled_show("speed", (float)cmd.target_speed);
 		}
   }
@@ -102,7 +106,7 @@ void motor_init(void)
 	//初始化PWM
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
-	//__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 0);
+	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 0);
 	__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 0);
 
 	//初始化编码器
@@ -117,6 +121,7 @@ void motor_set_speed(int16_t speed)
 	uint16_t	duty;		//占空比的值
 	if (speed<0)
 	{
+		speed = speed - 550;
 		duty = (uint16_t)((int32_t)-speed * PWM_PERIOD / 1000);
 		if (duty > PWM_PERIOD) duty = PWM_PERIOD;
     __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, duty);
@@ -124,6 +129,7 @@ void motor_set_speed(int16_t speed)
 	}
 	else if(speed>0)
 	{
+		speed = speed + 550;
 		duty = (uint16_t)((int32_t)(speed) * PWM_PERIOD / 1000);
 		if (duty > PWM_PERIOD) duty = PWM_PERIOD;
     __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 0);
@@ -134,7 +140,7 @@ void motor_set_speed(int16_t speed)
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 0);
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 0);
 	}
-	oled_show("pwm", (float)duty);
+//	oled_show("pwm", (float)duty);
 }
 
 //电机刹车

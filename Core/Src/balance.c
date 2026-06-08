@@ -66,12 +66,13 @@ void PID_Update(PID_t *p)
 	}
 }
 
+
 PID_t AnglePID = {			//内环角度环PID结构体变量，定义的时候同时给部分成员赋初值
 	.Target = CENTER_ANGLE,	//角度环目标值初值设定为中心角度值
 	
-	.Kp = 0,				//比例项权重
-	.Ki = 0,				//积分项权重
-	.Kd = 0,				//微分项权重
+	.Kp = 2.0f,				//比例项权重
+	.Ki = 0.0f,				//积分项权重
+	.Kd = 0.8f,				//微分项权重
 	
 	.OutMax = 1000,			//输出限幅的最大值
 	.OutMin = -1000,			//输出限幅的最小值
@@ -80,9 +81,9 @@ PID_t AnglePID = {			//内环角度环PID结构体变量，定义的时候同时给部分成员赋初值
 PID_t LocationPID = {		//外环位置环PID结构体变量，定义的时候同时给部分成员赋初值
 	.Target = 0,			//位置环目标值初值设定为0
 	
-	.Kp = 0,				//比例项权重
-	.Ki = 0,				//积分项权重
-	.Kd = 0,				//微分项权重
+	.Kp = 1.0f,				//比例项权重
+	.Ki = 0.02f,				//积分项权重
+	.Kd = 0.1f,				//微分项权重
 	
 	.OutMax = 60,			//输出限幅的最大值
 	.OutMin = -60,			//输出限幅的最小值
@@ -92,65 +93,76 @@ Sensor_Data_Typedef angle;	//这里得到第一个角度的数据
 MotorFeedback_t motor_sensor;//这里得到电机的数据
 MotorCmd_t motor_command;	//这里是用于回传的
 
-volatile uint8_t RunState;			//表示倒立摆运行状态，0=停止, 1=判断状态, 21-24=向左泵, 31-34=向右泵, 4=平衡
+volatile uint8_t RunState = 1;			//表示倒立摆运行状态，0=停止, 1=判断状态, 21-24=向左泵, 31-34=向右泵, 4=平衡
 
 //任务函数定义
 void balance_f(void const * argument)
 {
-	
-	static uint16_t Count1, Count2;
-	
-	for(;;)
-	{	
-		
-		xQueueReceive(xSensorQueue, &angle, 0);
-		xQueueReceive(xMotorFeedbackQueue, &motor_sensor, 0);
-		
-		/*摆杆倒下自动停止PID程序*/
-		if (! (angle.angle1 > CENTER_ANGLE - CENTER_RANGE
-			&& angle.angle1 < CENTER_ANGLE + CENTER_RANGE))	//如果角度值超过了规定的中心区间
-		{
-			RunState = 0;			//运行状态变量置0，自动停止PID程序
-		}
-		
-				/*根据运行状态执行PID程序或者停止*/
-		if (RunState)				//如果运行状态不为0
-		{
-			/*角度环计次分频*/
-			Count1 ++;				//计次自增
-			if (Count1 >= 5)		//如果计次5次，则if成立，即if每隔5ms进一次
-			{
-				Count1 = 0;			//计次清零，便于下次计次
+    static uint16_t Count1 = 0, Count2 = 0;
+    Sensor_Data_Typedef angle_local;
+    MotorFeedback_t motor_local;
+    MotorCmd_t motor_cmd;
+
+    for(;;)
+    {
+        // 阻塞等待最新传感器数据，15ms 超时
+        if (xQueueReceive(xSensorQueue, &angle_local, pdMS_TO_TICKS(15)) == pdTRUE) {
+            LED_Off(LED1_Pin);
+        } else {
+            LED_On(LED1_Pin);
+            continue;   // 没拿到传感器数据，跳过本次控制
+        }
+
+        // 阻塞等待最新电机反馈
+        if (xQueueReceive(xMotorFeedbackQueue, &motor_local, pdMS_TO_TICKS(15)) == pdTRUE) {
+            LED_Off(LED2_Pin);
+        } else {
+            LED_On(LED2_Pin);
+            continue;
+        }
+
+        // 摔倒保护
+        if (angle_local.angle2 < CENTER_ANGLE - CENTER_RANGE ||
+            angle_local.angle2 > CENTER_ANGLE + CENTER_RANGE) {
+            RunState = 0;
+            motor_cmd.target_speed = 0;
+            xQueueSend(xMotorCmdQueue, &motor_cmd, 0);
+							
+							LED_On(LED2_Pin);
+							
+            continue;
+        }
+
+				LED_Off(LED2_Pin);
 				
-				/*以下进行角度环PID控制*/
-				AnglePID.Actual = angle.angle1;		//内环为角度环，实际值为角度值
-				PID_Update(&AnglePID);					//调用封装好的函数，一步完成PID计算和更新
-				motor_command.target_speed = AnglePID.Out;
-				xQueueSend(xMotorCmdQueue, &motor_command, 0);//角度环的输出值给到电机	
-			}
-			
-			/*位置环计次分频*/
-			Count2 ++;				//计次自增
-			if (Count2 >= 25)		//如果计次50次，则if成立，即if每隔50ms进一次
-			{
-				Count2 = 0;			//计次清零，便于下次计次
-				
-				/*以下进行位置环PID控制*/
-				
-				LocationPID.Actual = motor_sensor.encoder_pos;	//外环为位置环，实际值为位置值
-				PID_Update(&LocationPID);		//调用封装好的函数，一步完成PID计算和更新
-				AnglePID.Target = CENTER_ANGLE - LocationPID.Out;	//外环的输出值作用于内环的目标值，组成串级PID结构
-			}
-		}
-		else						//如果运行状态为0
-		{
-			motor_command.target_speed = 0;
-			xQueueSend(xMotorCmdQueue, &motor_command, 0);		//不执行PID程序且电机PWM直接设置为0，电机停止
-		}
-		
-		vTaskDelay(pdMS_TO_TICKS(1));
-	}
-  
+        // 控制分频（注意：每次循环只加一次，基于传感器更新频率）
+        Count1++;
+        Count2++;
+
+        if (Count1 >= 5) {   // 每 5 个传感器数据更新一次角度环（约25ms)
+            Count1 = 0;
+            AnglePID.Actual = angle_local.angle2;
+            PID_Update(&AnglePID);
+            motor_cmd.target_speed = (int16_t)AnglePID.Out;
+					
+						if(motor_cmd.target_speed == 0) {
+							LED_On(LED3_Pin);
+						}else {
+							LED_Off(LED3_Pin);
+						}
+            xQueueSend(xMotorCmdQueue, &motor_cmd, 0);
+        }
+
+        if (Count2 >= 25) {  // 每 25 个传感器数据更新一次位置环（约125ms）			
+            Count2 = 0;
+            LocationPID.Actual = motor_local.encoder_pos;
+            PID_Update(&LocationPID);
+            AnglePID.Target = CENTER_ANGLE - LocationPID.Out;
+        }
+
+        // 控制周期由队列接收超时决定（约15ms），无需额外 vTaskDelay
+    }
+
 }
 //	这段是带有自动起摆的任务函数，在完成调参之后进行使用
 //  void balance_f(void const * argument)
@@ -343,11 +355,11 @@ void set_f(void const * argument)
 		/*LED指示程序运行状态*/
 		if (RunState)		//如果运行状态非0
 		{
-			LED_On(LED1_Pin);		//点亮LED，指示程序正在运行
+			LED_On(LED2_Pin);		//点亮LED，指示程序正在运行
 		}
 		else				//否则
 		{
-			LED_Off(LED1_Pin);		//熄灭LED，指示程序停止运行
+			LED_Off(LED2_Pin);		//熄灭LED，指示程序停止运行
 		}
 	  
 		osDelay(1);

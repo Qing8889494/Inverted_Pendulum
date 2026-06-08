@@ -1,9 +1,9 @@
 inverted_pendulum\motor.o: ..\Core\Src\motor.c
 inverted_pendulum\motor.o: ../Core/Inc/motor.h
-inverted_pendulum\motor.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
+inverted_pendulum\motor.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
 inverted_pendulum\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 inverted_pendulum\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-inverted_pendulum\motor.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
+inverted_pendulum\motor.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
 inverted_pendulum\motor.o: ../Core/Inc/FreeRTOSConfig.h
 inverted_pendulum\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 inverted_pendulum\motor.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
@@ -54,3 +54,5 @@ inverted_pendulum\motor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim
 inverted_pendulum\motor.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 inverted_pendulum\motor.o: ../Core/Inc/led.h
 inverted_pendulum\motor.o: ../Core/Inc/my_oled.h
+inverted_pendulum\motor.o: ../Core/Inc/angle_sensor.h
+inverted_pendulum\motor.o: ../Core/Inc/adc.h
