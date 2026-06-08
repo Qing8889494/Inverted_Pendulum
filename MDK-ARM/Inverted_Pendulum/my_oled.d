@@ -51,8 +51,14 @@ inverted_pendulum\my_oled.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/
 inverted_pendulum\my_oled.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 inverted_pendulum\my_oled.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 inverted_pendulum\my_oled.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
+<<<<<<< HEAD
 inverted_pendulum\my_oled.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdio.h
 inverted_pendulum\my_oled.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\string.h
+=======
+inverted_pendulum\my_oled.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+inverted_pendulum\my_oled.o: F:\keil5\ARM\ARMCC\Bin\..\include\string.h
+inverted_pendulum\my_oled.o: F:\keil5\ARM\ARMCC\Bin\..\include\ctype.h
+>>>>>>> a48d36b05e505bab6b1568f4b1b9271d348de205
 inverted_pendulum\my_oled.o: ../Core/Inc/i2c.h
 inverted_pendulum\my_oled.o: ../Core/Inc/oled.h
 inverted_pendulum\my_oled.o: ../Core/Inc/angle_sensor.h
