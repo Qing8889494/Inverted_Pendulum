@@ -140,10 +140,9 @@ void motor_set_speed(int16_t speed)
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, 0);
 		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, 0);
 	}
-<<<<<<< HEAD
+
 //	oled_show("pwm", (float)duty);
-=======
->>>>>>> a48d36b05e505bab6b1568f4b1b9271d348de205
+
 }
 
 //µç»úÉ²³µ

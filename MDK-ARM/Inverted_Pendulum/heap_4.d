@@ -1,8 +1,8 @@
 inverted_pendulum\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/portable/MemMang/heap_4.c
-inverted_pendulum\heap_4.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdlib.h
+inverted_pendulum\heap_4.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stdlib.h
 inverted_pendulum\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-inverted_pendulum\heap_4.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stddef.h
-inverted_pendulum\heap_4.o: D:\Keil5\Keil_v5\ARM\ARM_Compiler_5.06u7\Bin\..\include\stdint.h
+inverted_pendulum\heap_4.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stddef.h
+inverted_pendulum\heap_4.o: D:\keil5\Core\ARM\ARMCC\Bin\..\include\stdint.h
 inverted_pendulum\heap_4.o: ../Core/Inc/FreeRTOSConfig.h
 inverted_pendulum\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 inverted_pendulum\heap_4.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h

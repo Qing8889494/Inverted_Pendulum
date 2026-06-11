@@ -185,11 +185,14 @@ void MX_FREERTOS_Init(void) {
 	if(xMotorCmdQueue == NULL) {
 		Error_Handler();
 	}
+	
+	
 	xMotorFeedbackQueue	= xQueueCreate(1, sizeof(MotorFeedback_t));		//电机编码器数据
 	if(xMotorFeedbackQueue == NULL) {
 		Error_Handler();
 	}
 	
+	PID_Queue_Init();
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
 
@@ -207,12 +210,12 @@ void MX_FREERTOS_Init(void) {
 //  Usart1_rxHandle = osThreadCreate(osThread(Usart1_rx), NULL);
 
   /* definition and creation of Usart2_tx */
-//  osThreadDef(Usart2_tx, usart2_tx_f, osPriorityIdle, 0, 128);***********************************
-//  Usart2_txHandle = osThreadCreate(osThread(Usart2_tx), NULL);
+	osThreadDef(Usart2_tx, usart2_tx_f, osPriorityAboveNormal, 0, 512);
+	Usart2_txHandle = osThreadCreate(osThread(Usart2_tx), NULL);
 
   /* definition and creation of Usart2_rx */
-//  osThreadDef(Usart2_rx, usart2_rx_f, osPriorityIdle, 0, 128);
-//  Usart2_rxHandle = osThreadCreate(osThread(Usart2_rx), NULL);
+	osThreadDef(Usart2_rx, usart2_rx_f, osPriorityIdle, 0, 256);
+	Usart2_rxHandle = osThreadCreate(osThread(Usart2_rx), NULL);
 
   /* definition and creation of Usart3_tx */
   osThreadDef(Usart3_tx, usart3_tx_f, osPriorityIdle, 0, 128);
@@ -241,6 +244,8 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of Balance */
   osThreadDef(Balance, balance_f, osPriorityAboveNormal, 0, 512);
   BalanceHandle = osThreadCreate(osThread(Balance), NULL);
+  PID_Task_Init();
+  
 //	
 //	osThreadDef(Set, set_f, osPriorityIdle, 0, 256);****************************************
 //  SetHandle = osThreadCreate(osThread(Set), NULL);
