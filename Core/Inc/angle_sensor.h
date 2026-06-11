@@ -27,13 +27,13 @@
 #include "queue.h"
 
 // 12位ADC量程
-#define ADC_MAX        4095.0f
+#define ADC_MAX        4040.0f
 // 角度量程
 #define FULL_ANGLE     360.0f
 
 // 垂直校准值
 #define A1_VERTICAL_MID  3000.0f
-#define A2_VERTICAL_MID  2730.0f
+#define A2_VERTICAL_MID  705.0f
 
 //采样周期
 #define SAMPLE_PERIOD   0.005f

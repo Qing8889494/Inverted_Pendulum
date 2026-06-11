@@ -31,8 +31,8 @@
   #include "usart.h"
   #include <stdio.h>
 
-  #define CENTER_ANGLE        0
-  #define CENTER_RANGE        60
+  #define CENTER_ANGLE        60
+  #define CENTER_RANGE        40
 
   void PID_Update(PID_t *p)
   {
@@ -97,19 +97,19 @@
 
       for(;;)
       {
-          if (xQueueReceive(xSensorQueue, &angle_local, pdMS_TO_TICKS(15)) == pdTRUE) {
-              LED_Off(LED1_Pin);
+          if (xQueuePeek(xSensorQueue, &angle_local, pdMS_TO_TICKS(15)) == pdTRUE) {
+//              LED_Off(LED1_Pin);
           } else {
-              LED_On(LED1_Pin);
+ //             LED_On(LED1_Pin);
               continue;
           }
 
-          if (xQueueReceive(xMotorFeedbackQueue, &motor_local, pdMS_TO_TICKS(15)) == pdTRUE) {
-              LED_Off(LED2_Pin);
-          } else {
-              LED_On(LED2_Pin);
-              continue;
-          }
+//          if (xQueuePeek(xMotorFeedbackQueue, &motor_local, pdMS_TO_TICKS(15)) == pdTRUE) {
+//              LED_Off(LED2_Pin);
+//          } else {
+//              LED_On(LED2_Pin);
+//              continue;
+//          }
 
           if (angle_local.angle2 < CENTER_ANGLE - CENTER_RANGE ||
               angle_local.angle2 > CENTER_ANGLE + CENTER_RANGE) {

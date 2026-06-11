@@ -200,24 +200,25 @@
 
   void usart2_tx_f(void const * argument)
   {
-      Sensor_Data_Typedef sensor_data;
+      MotorFeedback_t sensor_data;
+			Sensor_Data_Typedef angle_data;
       char tx_buf[128];
       char *ptr;
 	  
       for(;;)
       {
-          if (xQueuePeek(xSensorQueue, &sensor_data, pdMS_TO_TICKS(50)) != pdPASS)
+          if (xQueuePeek(xMotorFeedbackQueue, &sensor_data, pdMS_TO_TICKS(50)) != pdPASS || xQueuePeek(xSensorQueue, &angle_data, pdMS_TO_TICKS(50))!= pdPASS)
           {
               continue;
           }
 		 
-
+					//LED_On(LED2_Pin);
           ptr = tx_buf;
-          ptr += sprintf(ptr, "%.2f", sensor_data.angle2);
+          ptr += sprintf(ptr, "%.2f", angle_data.angle2);
           *ptr++ = ',';
-          ptr += sprintf(ptr, "%.2f", sensor_data.angular_velocity2);
+          ptr += sprintf(ptr, "%.2f", sensor_data.angle_deg);
           *ptr++ = ',';
-		  ptr += sprintf(ptr, "%d", g_last_motor_speed);
+		  ptr += sprintf(ptr, "%d", 60);
           *ptr++ = '\r';
           *ptr++ = '\n';
           *ptr = '\0';
@@ -262,6 +263,7 @@
       {
           if (HAL_UART_Receive(&huart3, &rx_char, 1, 100) == HAL_OK)
           {
+							LED_Off(LED1_Pin);
               if (rx_char == '\n')
               {
                   rx_buf[idx] = '\0';
@@ -273,6 +275,7 @@
                                  &pid.outer_kp, &pid.outer_ki, &pid.outer_kd) == 6)
                       {
                           xQueueOverwrite(xPIDQueue, &pid);
+												LED_On(LED1_Pin);
                       }
                   }
                   idx = 0;

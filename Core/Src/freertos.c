@@ -213,13 +213,13 @@ void MX_FREERTOS_Init(void) {
 	osThreadDef(Usart2_tx, usart2_tx_f, osPriorityAboveNormal, 0, 512);
 	Usart2_txHandle = osThreadCreate(osThread(Usart2_tx), NULL);
 
-  /* definition and creation of Usart2_rx */
-	osThreadDef(Usart2_rx, usart2_rx_f, osPriorityIdle, 0, 256);
-	Usart2_rxHandle = osThreadCreate(osThread(Usart2_rx), NULL);
+//  /* definition and creation of Usart2_rx */
+//	osThreadDef(Usart2_rx, usart2_rx_f, osPriorityIdle, 0, 256);
+//	Usart2_rxHandle = osThreadCreate(osThread(Usart2_rx), NULL);
 
-  /* definition and creation of Usart3_tx */
-  osThreadDef(Usart3_tx, usart3_tx_f, osPriorityIdle, 0, 128);
-  Usart3_txHandle = osThreadCreate(osThread(Usart3_tx), NULL);
+//  /* definition and creation of Usart3_tx */
+//  osThreadDef(Usart3_tx, usart3_tx_f, osPriorityIdle, 0, 128);
+//  Usart3_txHandle = osThreadCreate(osThread(Usart3_tx), NULL);
 
   /* definition and creation of Usart3_rx */
   osThreadDef(Usart3_rx, usart3_rx_f, osPriorityAboveNormal, 0, 256);

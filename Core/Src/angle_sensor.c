@@ -40,7 +40,8 @@
       float filter_adc2 = sensor_filter(raw2, last_adc2);
 
       data->angle1 = ((filter_adc1 - A1_VERTICAL_MID) / ADC_MAX) * FULL_ANGLE;
-      data->angle2 = ((filter_adc2 - A2_VERTICAL_MID) / ADC_MAX) * FULL_ANGLE;
+      data->angle2 = (filter_adc2 / ADC_MAX) * FULL_ANGLE;
+		//data->angle2 = filter_adc2;
 
       float vel1 = (data->angle1 - last_angle1) / SAMPLE_PERIOD;
       float vel2 = (data->angle2 - last_angle2) / SAMPLE_PERIOD;
