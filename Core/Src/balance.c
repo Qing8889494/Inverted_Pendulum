@@ -31,8 +31,8 @@
   #include "usart.h"
   #include <stdio.h>
 
-  #define CENTER_ANGLE        60
-  #define CENTER_RANGE        40
+  #define CENTER_ANGLE        63
+  #define CENTER_RANGE        30
 
   void PID_Update(PID_t *p)
   {
@@ -101,6 +101,7 @@
 //              LED_Off(LED1_Pin);
           } else {
  //             LED_On(LED1_Pin);
+							osDelay(1);
               continue;
           }
 
@@ -117,11 +118,13 @@
               motor_cmd.target_speed = 0;
               g_last_motor_speed = 0;
               xQueueSend(xMotorCmdQueue, &motor_cmd, 0);
-              LED_On(LED2_Pin);
+              LED_Off(LED1_Pin);
+								
+							osDelay(1);
               continue;
           }
 
-          LED_Off(LED2_Pin);
+          LED_On(LED1_Pin);
 
           Count1++;
           Count2++;
@@ -147,6 +150,7 @@
               PID_Update(&LocationPID);
               AnglePID.Target = CENTER_ANGLE - LocationPID.Out;
           }
+					osDelay(1);
       }
   }
 

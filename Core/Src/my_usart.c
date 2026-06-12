@@ -218,7 +218,8 @@
           *ptr++ = ',';
           ptr += sprintf(ptr, "%.2f", sensor_data.angle_deg);
           *ptr++ = ',';
-		  ptr += sprintf(ptr, "%d", 60);
+		  ptr += sprintf(ptr, "%d", 63
+					);
           *ptr++ = '\r';
           *ptr++ = '\n';
           *ptr = '\0';
@@ -263,7 +264,7 @@
       {
           if (HAL_UART_Receive(&huart3, &rx_char, 1, 100) == HAL_OK)
           {
-							LED_Off(LED1_Pin);
+							LED_On(LED2_Pin);
               if (rx_char == '\n')
               {
                   rx_buf[idx] = '\0';
@@ -275,7 +276,7 @@
                                  &pid.outer_kp, &pid.outer_ki, &pid.outer_kd) == 6)
                       {
                           xQueueOverwrite(xPIDQueue, &pid);
-												LED_On(LED1_Pin);
+												LED_Off(LED2_Pin);
                       }
                   }
                   idx = 0;

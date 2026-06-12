@@ -242,7 +242,7 @@ void MX_FREERTOS_Init(void) {
   Motor_sensorHandle = osThreadCreate(osThread(Motor_sensor), NULL);
 
   /* definition and creation of Balance */
-  osThreadDef(Balance, balance_f, osPriorityAboveNormal, 0, 512);
+  osThreadDef(Balance, balance_f, osPriorityHigh, 0, 512);
   BalanceHandle = osThreadCreate(osThread(Balance), NULL);
   PID_Task_Init();
   

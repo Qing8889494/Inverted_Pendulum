@@ -94,7 +94,7 @@ void motor_sensor_f(void const * argument)
 		{
 		}
 		
-		osDelay(5);
+		vTaskDelay(pdMS_TO_TICKS(5));
   }
   
 }
