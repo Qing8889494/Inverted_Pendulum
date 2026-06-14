@@ -222,7 +222,7 @@
           *ptr++ = ',';
           ptr += sprintf(ptr, "%.2f", sensor_data.angle_deg);
           *ptr++ = ',';
-		  ptr += sprintf(ptr, "%.2f", 62.5
+		  ptr += sprintf(ptr, "%.2f", 53.4
 					);
           *ptr++ = '\r';
           *ptr++ = '\n';

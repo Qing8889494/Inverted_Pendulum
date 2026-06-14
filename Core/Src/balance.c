@@ -31,8 +31,13 @@
   #include "usart.h"
   #include <stdio.h>
 
-  #define CENTER_ANGLE        62.5
+  #define CENTER_ANGLE        53.4
   #define CENTER_RANGE        40
+	
+	#define FRICTION_COMP_LOW   60       // 中心以下的补偿力矩（阻尼大，需要更大）
+  #define FRICTION_DEADBAND_LOW   2.5f  // 中心以下的死区 (°)
+  #define FRICTION_COMP_HIGH  50       // 中心以上的补偿力矩（阻尼小，需要较小）
+  #define FRICTION_DEADBAND_HIGH  1.0f  // 中心以上的死区 (°)
 
   void PID_Update(PID_t *p)
   {
@@ -135,6 +140,13 @@
               AnglePID.Actual = angle_local.angle2;
               PID_Update(&AnglePID);
               motor_cmd.target_speed = (int16_t)AnglePID.Out;
+						
+						 // 当角度误差超出死区、但 PID 输出太小时，补足到最小输出
+             float angle_err = AnglePID.Target - angle_local.angle2;
+              if (angle_err > FRICTION_DEADBAND_LOW)
+                  motor_cmd.target_speed += FRICTION_COMP_LOW;
+              else if (angle_err < -FRICTION_DEADBAND_HIGH)
+                  motor_cmd.target_speed -= FRICTION_COMP_HIGH;
 
               if(motor_cmd.target_speed == 0) {
                   LED_On(LED3_Pin);
