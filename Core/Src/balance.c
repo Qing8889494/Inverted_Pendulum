@@ -31,8 +31,8 @@
   #include "usart.h"
   #include <stdio.h>
 
-  #define CENTER_ANGLE        63
-  #define CENTER_RANGE        30
+  #define CENTER_ANGLE        62.5
+  #define CENTER_RANGE        40
 
   void PID_Update(PID_t *p)
   {
@@ -94,6 +94,7 @@
       Sensor_Data_Typedef angle_local;
       MotorFeedback_t motor_local;
       MotorCmd_t motor_cmd;
+		
 
       for(;;)
       {
