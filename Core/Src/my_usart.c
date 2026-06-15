@@ -1,418 +1,369 @@
 /* USER CODE BEGIN Header */
-/**
-  ******************************************************************************
-  * ÎÄ¼şÃû³Æ          : my_usart.c
-  * ¹¦ÄÜÃèÊö          : 
-  ******************************************************************************
-  * @attention
-  *
-  * °æÈ¨ËùÓĞ£º¿ØÖÆ¹¤³Ì¿Î³ÌÏîÄ¿×é
-  * ±£ÁôËùÓĞÈ¨Àû
-  *
-  * ×÷    Õß£ºÏòË¼¼ÎÏòË¼¼Î
-  * ´´½¨Ê±¼ä£º2026.5.23
-  * ĞŞ¸Ä¼ÇÂ¼£ºÓÃÁË´®¿Ú1µÄ·¢Êı¾İ£¬ÓÃÀ´µ÷ÊÔ´«¸ĞÆ÷µÄÊı¾İÊÇ·ñÕıÈ·µÄ£¨ÖÜÄÏÈ«£¬2026.5.23£©
-	*						ÓÃ´®¿Ú2µÄÊÕÊı¾İ£¬À´½ÓÊÕµçÄÔ¶Ë·¢ËÍµÄµç»úËÙ¶ÈÖ¸Áî£º@v 300
-	*						Ôö¼Ó´®¿Ú2 SerialPlot ²¨ĞÎ·¢ËÍ£¨ÏòË¼¼Î£¬2026.5.25£©
-  *           Ôö¼Ó´®¿Ú3 PID ²ÎÊı½ÓÊÕ£¨ÏòË¼¼Î£¬2026.5.25£©
-	*						ÓÃ´®¿Ú1µÄÊÕÊı¾İ£¬À´½ÓÊÕµçÄÔ¶Ë·¢ËÍµÄµç»úËÙ¶ÈÖ¸Áî£ºº«Çì£¬2026.5.24
-	*						ÓÃ´®¿Ú1µÄ·¢Êı¾İ£¬À´µ÷ÊÔµç»úµÄ±àÂëÆ÷Êı¾İ£¨2026.5.28£©
-	*						ÓÅ»¯ÁË´®¿Ú2·¢ËÍ²¨ĞÎµÄ´úÂë£¬°Ñ´®¿Ú3½ÓÊÕµ½µÄPID²ÎÊı´«µ½ÁËflashÀïÃæ£¬·ÀÖ¹µôµçÖØÖÃ£¨ÖÜÄÏÈ« 2026.6.1£©
-  ******************************************************************************
-  */
-/* USER CODE END Header */
-
-#include "my_usart.h"
-#include "cmsis_os.h"
-#include "angle_sensor.h"
-#include "motor.h"
-#include "usart.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "led.h"
-#include "my_oled.h"
-#include "balance.h"
-
-#include "stm32f4xx_hal_flash.h"
-
-#define PID_PARAM_FLASH_ADDR    0x0807F000U  
-
-typedef struct
-{
-    float inner_kp;
-    float inner_ki;
-    float inner_kd;
-    float outer_kp;
-    float outer_ki;
-    float outer_kd;
-} PID_Store_t;
-
-extern PID_t AnglePID;
-extern PID_t LocationPID;
-
-static void PID_Flash_Write(PID_Store_t *pParam)
-{
-    HAL_FLASH_Unlock();
-
-    FLASH_EraseInitTypeDef eraseInit = {0};
-    uint32_t pageError = 0;
-    eraseInit.TypeErase    = FLASH_TYPEERASE_SECTORS;
-    eraseInit.Sector       = FLASH_SECTOR_11;
-    eraseInit.NbSectors    = 1;
-    eraseInit.VoltageRange = FLASH_VOLTAGE_RANGE_3;
-    HAL_FLASHEx_Erase(&eraseInit, &pageError);
-
-    uint32_t *pSrc = (uint32_t *)pParam;
-    for(uint16_t i = 0; i < sizeof(PID_Store_t) / 4; i++)
-    {
-        HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, PID_PARAM_FLASH_ADDR + i*4, pSrc[i]);
-    }
-
-    HAL_FLASH_Lock();
-}
-
-static void PID_Flash_Read(PID_Store_t *pParam)
-{
-    memcpy(pParam, (void *)PID_PARAM_FLASH_ADDR, sizeof(PID_Store_t));
-}
-
-void PID_Load_From_Flash(void)
-{
-    PID_Store_t tmp;
-    PID_Flash_Read(&tmp);
-
-//    taskENTER_CRITICAL();  µ÷¶ÈÆ÷ÆôÓÃÇ°²»ÄÜµ÷ÓÃÁÙ½çÇøº¯Êı
-    AnglePID.Kp    = tmp.inner_kp;
-    AnglePID.Ki    = tmp.inner_ki;
-    AnglePID.Kd    = tmp.inner_kd;
-    LocationPID.Kp = tmp.outer_kp;
-    LocationPID.Ki = tmp.outer_ki;
-    LocationPID.Kd = tmp.outer_kd;
-//    taskEXIT_CRITICAL();
-}
-
-void PID_Save_To_Flash(void)
-{
-    PID_Store_t tmp;
-    tmp.inner_kp  = AnglePID.Kp;
-    tmp.inner_ki  = AnglePID.Ki;
-    tmp.inner_kd  = AnglePID.Kd;
-    tmp.outer_kp  = LocationPID.Kp;
-    tmp.outer_ki  = LocationPID.Ki;
-    tmp.outer_kd  = LocationPID.Kd;
-    PID_Flash_Write(&tmp);
-}
-
-
-#define UART1_RX_BUF_SIZE 32
-static uint8_t uart1_rx_buf[UART1_RX_BUF_SIZE];  // ½ÓÊÕ»º³å
-static uint8_t uart1_rx_idx = 0;                 // »º³åË÷Òı
-
-//ÈÎÎñº¯Êı¶¨Òå
-void usart1_tx_f(void const * argument)
-{
-	//Sensor_Data_Typedef sensor_data;
-	MotorFeedback_t sensor_motor;
-	char buf[128];
+  /**
+    ******************************************************************************
+    * ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½          : my_usart.c
+    * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½          :
+    ******************************************************************************
+    * @attention
+    *
+    * ï¿½ï¿½È¨ï¿½ï¿½ï¿½Ğ£ï¿½ï¿½ï¿½ï¿½Æ¹ï¿½ï¿½Ì¿Î³ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½
+    * ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¨ï¿½ï¿½
+    *
+    * ï¿½ï¿½    ï¿½ß£ï¿½ï¿½ï¿½Ë¼ï¿½ï¿½
+    * ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ä£º2026.5.23
+    * ï¿½Ş¸Ä¼ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½Ë´ï¿½ï¿½ï¿½1ï¿½Ä·ï¿½ï¿½ï¿½ï¿½İ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½È·ï¿½Ä£ï¿½ï¿½ï¿½ï¿½ï¿½È«ï¿½ï¿½2026.5.23ï¿½ï¿½
+      *                        ï¿½Ã´ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½ï¿½Ô¶Ë·ï¿½ï¿½ÍµÄµï¿½ï¿½ï¿½Ù¶ï¿½Ö¸ï¿½î£º@v 300
+      *                        ï¿½ï¿½ï¿½Ó´ï¿½ï¿½ï¿½2 SerialPlot ï¿½ï¿½ï¿½Î·ï¿½ï¿½Í£ï¿½ï¿½ï¿½Ë¼ï¿½Î£ï¿½2026.5.25ï¿½ï¿½
+    *           ï¿½ï¿½ï¿½Ó´ï¿½ï¿½ï¿½3 PID ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ£ï¿½ï¿½ï¿½Ë¼ï¿½Î£ï¿½2026.5.25ï¿½ï¿½
+      *                        ï¿½Ã´ï¿½ï¿½ï¿½1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õµï¿½ï¿½Ô¶Ë·ï¿½ï¿½ÍµÄµï¿½ï¿½ï¿½Ù¶ï¿½Ö¸ï¿½î£ºï¿½ï¿½ï¿½ì£¬2026.5.24
+      *                        ï¿½Ã´ï¿½ï¿½ï¿½1ï¿½Ä·ï¿½ï¿½ï¿½ï¿½İ£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ôµï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İ£ï¿½2026.5.28ï¿½ï¿½
+      *                        ï¿½Å»ï¿½ï¿½Ë´ï¿½ï¿½ï¿½2ï¿½ï¿½ï¿½Í²ï¿½ï¿½ÎµÄ´ï¿½ï¿½ë£¬ï¿½Ñ´ï¿½ï¿½ï¿½3ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½PIDï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½flashï¿½ï¿½ï¿½æ£¬ï¿½ï¿½Ö¹ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½È« 2026.6.1ï¿½ï¿½
+    ******************************************************************************
+    */
 	
-  for(;;)
+  /* USER CODE END Header */
+
+  #include "my_usart.h"
+  #include "cmsis_os.h"
+  #include "angle_sensor.h"
+  #include "motor.h"
+  #include "usart.h"
+  #include <stdio.h>
+  #include <stdlib.h>
+  #include <string.h>
+  #include "led.h"
+  #include "my_oled.h"
+  #include "balance.h"
+  #include "stm32f4xx_hal_flash.h"
+
+  #define PID_PARAM_FLASH_ADDR    0x0807F000U
+  #define PID_FLASH_MAGIC         0xDEADBEEFU
+
+  /* ä¸²å£3æ¥æ”¶é˜Ÿåˆ— - ç”¨äºä¸­æ–­æ¨¡å¼æ¥æ”¶ */
+  static QueueHandle_t xUart3RxQueue = NULL;
+  static uint8_t uart3_rx_byte;
+
+  typedef struct
   {
-     vTaskDelay(pdMS_TO_TICKS(1000));
+      uint32_t magic;
+      float    inner_kp;
+      float    inner_ki;
+      float    inner_kd;
+      float    outer_kp;
+      float    outer_ki;
+      float    outer_kd;
+  } PID_Store_t;
 
-     if (xQueueReceive(xMotorFeedbackQueue, &sensor_motor, pdMS_TO_TICKS(10)) == pdPASS)
-     {
-         // ´òÓ¡½Ç¶ÈºÍ½ÇËÙ¶È
-			 sprintf(buf, "motor_rpm: %.2f , motor_angle: %.1f , motor_step: %d\r\n", sensor_motor.speed_rpm, sensor_motor.angle_deg, sensor_motor.encoder_pos);
-         
-       HAL_UART_Transmit(&huart1, (uint8_t *)buf, strlen(buf), 100);
-			 //oled_show("mSpeed", sensor_motor.speed_rpm);
-     }
-  }
-}
+  extern PID_t AnglePID;
+  extern PID_t LocationPID;
+  extern volatile int16_t g_last_motor_speed;
 
-//ÈÎÎñº¯Êı¶¨Òå
-void usart1_rx_f(void const * argument)
-{
-  uint8_t rx_char;          // µ¥´Î½ÓÊÕµÄ×Ö·û
-  int16_t speed = 0;        // ½âÎö³öµÄËÙ¶ÈÖµ
-  MotorCmd_t motor_cmd;     // µç»úÖ¸Áî½á¹¹Ìå
-
-  for(;;)
+  static void PID_Flash_Write(PID_Store_t *pParam)
   {
-    // ÂÖÑ¯½ÓÊÕ1¸ö×Ö·û£¬³¬Ê±1ms£¨½µµÍCPUÕ¼ÓÃ£©
-    if (HAL_UART_Receive(&huart1, &rx_char, 1, 1) == HAL_OK)
-    {
-      switch(rx_char)
+      HAL_FLASH_Unlock();
+
+      FLASH_EraseInitTypeDef eraseInit = {0};
+      uint32_t pageError = 0;
+      eraseInit.TypeErase    = FLASH_TYPEERASE_SECTORS;
+      eraseInit.Sector       = FLASH_SECTOR_7;
+      eraseInit.NbSectors    = 1;
+      eraseInit.VoltageRange = FLASH_VOLTAGE_RANGE_3;
+      HAL_FLASHEx_Erase(&eraseInit, &pageError);
+
+      uint32_t *pSrc = (uint32_t *)pParam;
+      for (uint16_t i = 0; i < sizeof(PID_Store_t) / 4; i++)
       {
-        case '@':  // Ö¸ÁîÆğÊ¼·û£¬ÖØÖÃ»º³åÇø
-          uart1_rx_idx = 0;
-          uart1_rx_buf[uart1_rx_idx++] = rx_char;
-          break;
-
-        case '\r': // »Ø³µ/»»ĞĞ×÷ÎªÖ¸Áî½áÊø·û
-        case '\n':
-          uart1_rx_buf[uart1_rx_idx] = '\0'; // ×Ö·û´®½áÊø·û
-          
-				/*
-				// ----- µ÷ÊÔ£º´òÓ¡½ÓÊÕ»º³åÇøÔ­Ê¼Êı¾İ -----
-    {
-        char dbg_buf[20];
-        int len = sprintf(dbg_buf, "RX[%d]: ", uart1_rx_idx);
-        // ´òÓ¡Ê®Áù½øÖÆ
-        for (int i = 0; i < uart1_rx_idx; i++) {
-            len += sprintf(dbg_buf + len, "%02X ", uart1_rx_buf[i]);
-        }
-        len += sprintf(dbg_buf + len, " | ");
-        // ´òÓ¡¿É´òÓ¡×Ö·û£¨ASCII 32~126 Ö±½ÓÏÔÊ¾£¬ÆäÓàÏÔÊ¾Îª '.'£©
-        for (int i = 0; i < uart1_rx_idx; i++) {
-            uint8_t c = uart1_rx_buf[i];
-            if (c >= 32 && c <= 126)
-                dbg_buf[len++] = c;
-            else
-                dbg_buf[len++] = '.';
-        }
-        dbg_buf[len++] = '\r';
-        dbg_buf[len++] = '\n';
-        dbg_buf[len] = '\0';
-        HAL_UART_Transmit(&huart1, (uint8_t*)dbg_buf, len, 100);
-    }
-    // ----- µ÷ÊÔ½áÊø -----
-		*/
-				
-          // ½âÎöÖ¸Áî£º@v 300 £¨¸ñÊ½¼ì²é£º³¤¶È¡İ4¡¢@v+¿Õ¸ñ¿ªÍ·£©
-          if (uart1_rx_idx >= 4 && uart1_rx_buf[0] == '@' && 
-              uart1_rx_buf[1] == 'v' && uart1_rx_buf[2] == ' ')
-          {
-            // ÌáÈ¡¿Õ¸ñºóµÄËÙ¶ÈÊıÖµ£¨×ª»»Îªint£©
-            speed = atoi((char *)&uart1_rx_buf[3]);
-            
-            // ËÙ¶È±ß½ç¼ì²é£¨-1000 ~ 1000£¬Æ¥Åämotor_set_speedµÄ·¶Î§£©
-            speed = (speed > 1000) ? 1000 : (speed < -1000) ? -1000 : speed;
-            
-            // ·â×°µç»úÖ¸Áî
-            motor_cmd.target_speed = speed;
-            motor_cmd.target_angle = 0; // ²âÊÔÓÃ£¬½Ç¶ÈÔİÉèÎª0
-            
-            // ·¢ËÍµ½µç»úÃüÁî¶ÓÁĞ£¨³¬Ê±10ms£©
-            if (xQueueSend(xMotorCmdQueue, &motor_cmd, pdMS_TO_TICKS(10)) == pdPASS)
-            {
-              // ·¢ËÍ³É¹¦£¬·µ»ØÈ·ÈÏĞÅÏ¢
-              char ack_buf[40];
-              sprintf(ack_buf, "Success: Motor speed set to %d\r\n", speed);
-              HAL_UART_Transmit(&huart1, (uint8_t *)ack_buf, strlen(ack_buf), 100);
-            }
-            else
-            {
-              // ¶ÓÁĞÂú£¬·¢ËÍÊ§°Ü
-              HAL_UART_Transmit(&huart1, (uint8_t *)"Error: Queue full, send fail\r\n", 30, 100);
-            }
-          }
-          else
-          {
-            // Ö¸Áî¸ñÊ½´íÎó
-            HAL_UART_Transmit(&huart1, (uint8_t *)"Error: Invalid format (use @v ¡Àxxx)\r\n", 40, 100);
-          }
-          uart1_rx_idx = 0; // ÖØÖÃ»º³åÇø
-          break;
-
-        default:
-          // ÆÕÍ¨×Ö·û£¬¼ÓÈë»º³åÇø£¨·ÀÖ¹Òç³ö£©
-          if (uart1_rx_idx < UART1_RX_BUF_SIZE - 1)
-          {
-            uart1_rx_buf[uart1_rx_idx++] = rx_char;
-          }
-          else
-          {
-            uart1_rx_idx = 0; // »º³åÇøÒç³ö£¬ÖØÖÃ
-          }
-          break;
+          HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, PID_PARAM_FLASH_ADDR + i * 4, pSrc[i]);
       }
-    }
-    osDelay(1); // ÇáÎ¢ÑÓÊ±£¬½µµÍCPUÕ¼ÓÃ
+
+      HAL_FLASH_Lock();
   }
-}
 
-
-// ÒıÓÃ balance.c ÖĞµÄ PID È«¾Ö±äÁ¿£¨ÓÃÓÚ¸üĞÂÏµÊı£©
-extern PID_t AnglePID;      // ÄÚ»·½Ç¶È»·
-extern PID_t LocationPID;   // Íâ»·Î»ÖÃ»·
-
-// PID ²ÎÊı½á¹¹Ìå£¨ÓÃÓÚ¶ÓÁĞ£©
-typedef struct {
-    float inner_kp;
-    float inner_ki;
-    float inner_kd;
-    float outer_kp;
-    float outer_ki;
-    float outer_kd;
-} PID_Params_t;
-
-// ¶ÓÁĞ¾ä±ú
-static QueueHandle_t xPIDQueue = NULL;
-
-//ÈÎÎñº¯Êı¶¨Òå
-/* ========== ´®¿Ú2 ÈÎÎñ£º·¢ËÍ²¨ĞÎÊı¾İ¸ø SerialPlot ========== */
-void usart2_tx_f(void const * argument)
-{
-	Sensor_Data_Typedef sensor_data;
-    MotorCmd_t motor_cmd;
-    float plot_data[3];
-    char tx_buf[128];
-    char *ptr;
-    uint8_t i;
-
-    for(;;)
-    {
-        // »ñÈ¡´«¸ĞÆ÷Êı¾İ£¨½Ç¶È¡¢½ÇËÙ¶È£©
-        if (xQueuePeek(xSensorQueue, &sensor_data, 0) != pdPASS)
-        {
-            osDelay(20);
-            continue;
-        }
-        // »ñÈ¡µç»úµ±Ç°Ä¿±êËÙ¶È
-        if (xQueuePeek(xMotorCmdQueue, &motor_cmd, 0) != pdPASS)
-        {
-            motor_cmd.target_speed = 0;  // Ä¬ÈÏÖµ
-        }
-
-        // ×¼±¸Èı¸öÍ¨µÀÊı¾İ£º½Ç¶È1¡¢½ÇËÙ¶È1¡¢µç»úÄ¿±êËÙ¶È
-        plot_data[0] = sensor_data.angle1;
-        plot_data[1] = sensor_data.angular_velocity1;
-        plot_data[2] = (float)motor_cmd.target_speed;
-
-        // ¸ñÊ½»¯×Ö·û´®£ºÊıÖµ1,ÊıÖµ2,ÊıÖµ3\r\n
-        ptr = tx_buf;
-        for (i = 0; i < 3; i++)
-        {
-            ptr += sprintf(ptr, "%.3f", plot_data[i]);
-            if (i < 2) *ptr++ = ',';
-        }
-        *ptr++ = '\r';
-        *ptr++ = '\n';
-        *ptr = '\0';
-				
-				// Í¨¹ı´®¿Ú2·¢ËÍ
-        HAL_UART_Transmit(&huart2, (uint8_t*)tx_buf, ptr - tx_buf, 100);
-
-        // ·¢ËÍ¼ä¸ô 20ms
-        osDelay(20);
-			}
-}
-
-
-//ÈÎÎñº¯Êı¶¨Òå
-void usart2_rx_f(void const * argument)
-{
-
-  for(;;)
+  static void PID_Flash_Read(PID_Store_t *pParam)
   {
-    osDelay(1);
+      memcpy(pParam, (void *)PID_PARAM_FLASH_ADDR, sizeof(PID_Store_t));
   }
-  
-}
 
-/* ========== ´®¿Ú3 ÈÎÎñ£º½ÓÊÕ PID ²ÎÊı²¢¸üĞÂ ========== */
-//ÈÎÎñº¯Êı¶¨Òå
-void usart3_tx_f(void const * argument)
-{
-  
-  for(;;)
+  void PID_Load_From_Flash(void)
   {
-    osDelay(1);
+      PID_Store_t tmp;
+      PID_Flash_Read(&tmp);
+
+      if (tmp.magic != PID_FLASH_MAGIC)
+          return;
+
+      AnglePID.Kp    = tmp.inner_kp;
+      AnglePID.Ki    = tmp.inner_ki;
+      AnglePID.Kd    = tmp.inner_kd;
+      LocationPID.Kp = tmp.outer_kp;
+      LocationPID.Ki = tmp.outer_ki;
+      LocationPID.Kd = tmp.outer_kd;
+  }
+
+  void PID_Save_To_Flash(void)
+  {
+      PID_Store_t tmp;
+      tmp.magic     = PID_FLASH_MAGIC;
+      tmp.inner_kp  = AnglePID.Kp;
+      tmp.inner_ki  = AnglePID.Ki;
+      tmp.inner_kd  = AnglePID.Kd;
+      tmp.outer_kp  = LocationPID.Kp;
+      tmp.outer_ki  = LocationPID.Ki;
+      tmp.outer_kd  = LocationPID.Kd;
+      PID_Flash_Write(&tmp);
+  }
+
+
+  void usart1_tx_f(void const *argument)
+  {
+      MotorFeedback_t sensor_motor;
+      char buf[128];
+
+      for (;;)
+      {
+          if (xQueueReceive(xMotorFeedbackQueue, &sensor_motor, pdMS_TO_TICKS(1000)) == pdPASS)
+          {
+              sprintf(buf, "motor_rpm: %.2f , motor_angle: %.1f , motor_step: %d\r\n",
+                      sensor_motor.speed_rpm,
+                      sensor_motor.angle_deg,
+                      sensor_motor.encoder_pos);
+              HAL_UART_Transmit(&huart1, (uint8_t *)buf, strlen(buf), 100);
+          }
+      }
+  }
+
+
+  #define UART1_RX_BUF_SIZE 32
+  static uint8_t  uart1_rx_buf[UART1_RX_BUF_SIZE];
+  static uint16_t uart1_rx_idx = 0;
+
+  void usart1_rx_f(void const *argument)
+  {
+      uint8_t    rx_char;
+      int16_t    speed = 0;
+      MotorCmd_t motor_cmd;
+
+      for (;;)
+      {
+          if (HAL_UART_Receive(&huart1, &rx_char, 1, 1) == HAL_OK)
+          {
+              switch (rx_char)
+              {
+                  case '@':
+                      uart1_rx_idx = 0;
+                      uart1_rx_buf[uart1_rx_idx++] = rx_char;
+                      break;
+
+                  case '\r':
+                  case '\n':
+                      uart1_rx_buf[uart1_rx_idx] = '\0';
+
+                      if (uart1_rx_idx >= 4 &&
+                          uart1_rx_buf[0] == '@' &&
+                          uart1_rx_buf[1] == 'v' &&
+                          uart1_rx_buf[2] == ' ')
+                      {
+                          speed = (int16_t)atoi((char *)&uart1_rx_buf[3]);
+                          speed = (speed > 1000) ? 1000 : (speed < -1000) ? -1000 : speed;
+
+                          motor_cmd.target_speed = speed;
+                          motor_cmd.target_angle = 0;
+
+                          if (xQueueSend(xMotorCmdQueue, &motor_cmd, pdMS_TO_TICKS(10)) == pdPASS)
+                          {
+                              char ack_buf[48];
+                              sprintf(ack_buf, "Success: Motor speed set to %d\r\n", speed);
+                              HAL_UART_Transmit(&huart1, (uint8_t *)ack_buf, strlen(ack_buf), 100);
+                          }
+                          else
+                          {
+                              HAL_UART_Transmit(&huart1,
+                                  (uint8_t *)"Error: Queue full\r\n", 19, 100);
+                          }
+                      }
+                      else
+                      {
+                          HAL_UART_Transmit(&huart1,
+                              (uint8_t *)"Error: Invalid format (use @v +-xxx)\r\n", 38, 100);
+                      }
+                      uart1_rx_idx = 0;
+                      break;
+
+                  default:
+                      if (uart1_rx_idx < UART1_RX_BUF_SIZE - 1)
+                          uart1_rx_buf[uart1_rx_idx++] = rx_char;
+                      else
+                          uart1_rx_idx = 0;
+                      break;
+              }
+          }
+          osDelay(1);
+      }
+  }
+
+
+  void usart2_tx_f(void const * argument)
+  {
+      MotorFeedback_t sensor_data;
+			Sensor_Data_Typedef angle_data;
+      char tx_buf[128];
+      char *ptr;
+	  
+      for(;;)
+      {
+          if (xQueuePeek(xMotorFeedbackQueue, &sensor_data, pdMS_TO_TICKS(50)) != pdPASS || xQueuePeek(xSensorQueue, &angle_data, pdMS_TO_TICKS(50))!= pdPASS)
+          {
+              continue;
+          }
+		 
+					//LED_On(LED2_Pin);
+          ptr = tx_buf;
+          ptr += sprintf(ptr, "%.2f", angle_data.angle2);
+          *ptr++ = ',';
+          ptr += sprintf(ptr, "%.2f", sensor_data.angle_deg);
+          *ptr++ = ',';
+		  ptr += sprintf(ptr, "%d", 180
+					);
+          *ptr++ = '\r';
+          *ptr++ = '\n';
+          *ptr = '\0';
+
+           HAL_UART_Transmit(&huart2, (uint8_t*)tx_buf, ptr - tx_buf, 100);
+
+          osDelay(20);
+      }
+  }
+
+
+  void usart2_rx_f(void const *argument)
+  {
+      for (;;) { osDelay(1); }
+  }
+
+  void usart3_tx_f(void const *argument)
+  {
+      for (;;) { osDelay(1); }
+  }
+
+
+  typedef struct {
+      float inner_kp;
+      float inner_ki;
+      float inner_kd;
+      float outer_kp;
+      float outer_ki;
+      float outer_kd;
+  } PID_Params_t;
+
+  static QueueHandle_t xPIDQueue = NULL;
+
+  void usart3_rx_f(void const *argument)
+  {
+      uint8_t      rx_char;
+      uint8_t      rx_buf[64];
+      uint8_t      idx = 0;
+      PID_Params_t pid;
+
+      for (;;)
+      {
+          /* ä»é˜Ÿåˆ—æ¥æ”¶ä¸­æ–­é€æ¥çš„å­—ç¬¦ï¼Œé˜»å¡ç­‰å¾…æœ€å¤š100ms */
+          if (xQueueReceive(xUart3RxQueue, &rx_char, pdMS_TO_TICKS(100)) == pdPASS)
+          {
+              LED_On(LED2_Pin);
+              if (rx_char == '\n')
+              {
+                  rx_buf[idx] = '\0';
+
+                  if (idx > 0 && xPIDQueue != NULL)
+                  {
+                      if (sscanf((char *)rx_buf, "%f,%f,%f,%f,%f,%f",
+                                 &pid.inner_kp, &pid.inner_ki, &pid.inner_kd,
+                                 &pid.outer_kp, &pid.outer_ki, &pid.outer_kd) == 6)
+                      {
+                          xQueueOverwrite(xPIDQueue, &pid);
+                          LED_Off(LED2_Pin);
+                      }
+                  }
+                  idx = 0;
+              }
+              else if (rx_char != '\r')
+              {
+                  if (idx < sizeof(rx_buf) - 1)
+                      rx_buf[idx++] = rx_char;
+                  else
+                  {
+                      idx = 0;
+                  }
+              }
+          }
+      }
+  }
+
+
+  static void PIDUpdateTask(void *pvParameters)
+  {
+      PID_Params_t new_pid;
+
+      for (;;)
+      {
+          if (xQueueReceive(xPIDQueue, &new_pid, pdMS_TO_TICKS(100)) == pdTRUE)
+          {
+              taskENTER_CRITICAL();
+              {
+                  AnglePID.Kp    = new_pid.inner_kp;
+                  AnglePID.Ki    = new_pid.inner_ki;
+                  AnglePID.Kd    = new_pid.inner_kd;
+                  LocationPID.Kp = new_pid.outer_kp;
+                  LocationPID.Ki = new_pid.outer_ki;
+                  LocationPID.Kd = new_pid.outer_kd;
+              }
+              taskEXIT_CRITICAL();
+
+              PID_Save_To_Flash();
+          }
+      }
+  }
+
+
+  void USART_Init(void)
+  {
+      HAL_UART_Init(&huart2);
+      HAL_UART_Init(&huart3);
+      PID_Load_From_Flash();
+
+      /* åˆ›å»ºä¸²å£3æ¥æ”¶é˜Ÿåˆ— */
+      xUart3RxQueue = xQueueCreate(32, sizeof(uint8_t));
+
+      /* å¯åŠ¨ä¸²å£3ä¸­æ–­æ¥æ”¶ */
+      HAL_UART_Receive_IT(&huart3, &uart3_rx_byte, 1);
+  }
+
+  /* ä¸²å£æ¥æ”¶ä¸­æ–­å›è°ƒ */
+  void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+  {
+      if (huart->Instance == USART3)
+      {
+          BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+          xQueueSendFromISR(xUart3RxQueue, &uart3_rx_byte, &xHigherPriorityTaskWoken);
+          HAL_UART_Receive_IT(&huart3, &uart3_rx_byte, 1);
+          portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+      }
+  }
+
+  void PID_Queue_Init(void)
+  {
+      xPIDQueue = xQueueCreate(1, sizeof(PID_Params_t));
+      if (xPIDQueue == NULL)
+          HAL_UART_Transmit(&huart3, (uint8_t *)"[FAIL] xPIDQueue\r\n", 18, 100);
+  }
+
+  void PID_Task_Init(void)
+  {
+	  HAL_UART_Transmit(&huart2, (uint8_t *)"[INIT] PID_Task_Init\r\n", 22, 100);
+      BaseType_t ret = xTaskCreate(PIDUpdateTask, "PIDUpd", 512, NULL, configMAX_PRIORITIES - 1, NULL);
+      if (ret != pdPASS)
+          HAL_UART_Transmit(&huart2, (uint8_t *)"[FAIL] PIDUpdateTask\r\n", 22, 100);
+	  else
+		  HAL_UART_Transmit(&huart2, (uint8_t *)"[OK] PIDUpdateTask created\r\n", 28, 100);
   }
   
-}
-
-
-//ÈÎÎñº¯Êı¶¨Òå
-void usart3_rx_f(void const * argument)
-{
-    uint8_t      rx_char;
-    uint8_t      rx_buf[64];
-    uint8_t      idx = 0;
-    PID_Params_t pid;
-
-    for(;;)
-    {
-        if (HAL_UART_Receive(&huart3, &rx_char, 1, 100) == HAL_OK)
-        {
-            if (rx_char == '\n')
-            {
-                rx_buf[idx] = '\0';
-
-                if (idx > 0 && xPIDQueue != NULL)
-                {
-                    if (sscanf((char*)rx_buf, "%f,%f,%f,%f,%f,%f",
-                               &pid.inner_kp, &pid.inner_ki, &pid.inner_kd,
-                               &pid.outer_kp, &pid.outer_ki, &pid.outer_kd) == 6)
-                    {
-                        // ¸²¸ÇĞ´Èë£º±£Ö¤¶ÓÁĞÖĞÊ¼ÖÕÊÇ×îĞÂÒ»Ö¡
-                        xQueueOverwrite(xPIDQueue, &pid);
-                    }
-                    // ½âÎöÊ§°Ü¾²Ä¬¶ªÆú£¬²»Ó°Ïì¿ØÖÆÈÎÎñ
-                }
-
-                idx = 0;
-            }
-            else if (rx_char != '\r')
-            {
-                if (idx < sizeof(rx_buf) - 1)
-                    rx_buf[idx++] = rx_char;
-                else
-                    idx = 0;  // »º³åÇøÒç³ö£¬¶ªÆúµ±Ç°Ö¡
-            }
-        }
-
-        osDelay(1);
-    }
-}
-
-
-static void PIDUpdateTask(void *pvParameters)
-{
-    PID_Params_t new_pid;
-
-    for(;;)
-    {
-        // ×èÈûµÈ´ı¶ÓÁĞÖĞÓĞĞÂÊı¾İ£¨³¬Ê±100ms£©
-        if (xQueueReceive(xPIDQueue, &new_pid, pdMS_TO_TICKS(100)) == pdTRUE)
-        {
-            // ÓÃ FreeRTOS ÁÙ½çÇø±£»¤£¬·ÀÖ¹¿ØÖÆÈÎÎñ¶Áµ½Ğ´µ½Ò»°ëµÄ²ÎÊı
-            taskENTER_CRITICAL();
-            {
-                AnglePID.Kp    = new_pid.inner_kp;
-                AnglePID.Ki    = new_pid.inner_ki;
-                AnglePID.Kd    = new_pid.inner_kd;
-                LocationPID.Kp = new_pid.outer_kp;
-                LocationPID.Ki = new_pid.outer_ki;
-                LocationPID.Kd = new_pid.outer_kd;
-            }
-            taskEXIT_CRITICAL();
-
-            // ĞÂÔö£ºPID²ÎÊı¸üĞÂºó×Ô¶¯±£´æµ½Flash£¬¶Ïµç²»¶ªÊ§
-            PID_Save_To_Flash();
-
-            // Í¨¹ı´®¿Ú1·¢ËÍÈ·ÈÏ
-            char ack[] = "PID updated & saved\r\n";
-            HAL_UART_Transmit(&huart1, (uint8_t*)ack, strlen(ack), 100);
-        }
-    }
-}
-
-/* ==========================================================================
- * USART_Init ¡ª Í³Ò»³õÊ¼»¯º¯Êı
- * ========================================================================== */
-void USART_Init(void)
-{
-    // ĞÂÔö£º¿ª»ú×Ô¶¯¼ÓÔØFlashÖĞ±£´æµÄPID²ÎÊı
-    PID_Load_From_Flash();
-
-    // ´´½¨ PID ¶ÓÁĞ
-    xPIDQueue = xQueueCreate(1, sizeof(PID_Params_t));
-    configASSERT(xPIDQueue != NULL);
-
-    // ´´½¨ PID ¸üĞÂÈÎÎñ
-    BaseType_t ret = xTaskCreate(PIDUpdateTask, "PIDUpd", 256, NULL, 2, NULL);
-    configASSERT(ret == pdPASS);
-}

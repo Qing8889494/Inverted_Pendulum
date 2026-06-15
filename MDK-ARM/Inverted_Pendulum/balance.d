@@ -57,3 +57,5 @@ inverted_pendulum\balance.o: ../Core/Inc/motor.h
 inverted_pendulum\balance.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 inverted_pendulum\balance.o: ../Core/Inc/tim.h
 inverted_pendulum\balance.o: ../Core/Inc/led.h
+inverted_pendulum\balance.o: ../Core/Inc/usart.h
+inverted_pendulum\balance.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdio.h

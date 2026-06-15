@@ -1,7 +1,7 @@
 Dependencies for Project 'Inverted_Pendulum', Target 'Inverted_Pendulum': (DO NOT MODIFY !)
 CompilerVersion: 5060960::V5.06 update 7 (build 960)::.\ARMCC
 F (startup_stm32f407xx.s)(0x6A112D6E)(--cpu Cortex-M4.fp.sp -g --apcs=interwork --pd "__MICROLIB SETA 1" -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include--pd "__UVISION_VERSION SETA 542" --pd "STM32F407xx SETA 1" --pd "_RTE_ SETA 1"--list startup_stm32f407xx.lst --xref -o inverted_pendulum\startup_stm32f407xx.o --depend inverted_pendulum\startup_stm32f407xx.d)
-F (../Core/Src/main.c)(0x6A27AA9E)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include-D__UVISION_VERSION="542" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -D_PRINTF_FLOAT -D_SCANF_FLOAT-o inverted_pendulum\main.o --omf_browse inverted_pendulum\main.crf --depend inverted_pendulum\main.d)
+F (../Core/Src/main.c)(0x6A2F9A52)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include-D__UVISION_VERSION="542" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -D_PRINTF_FLOAT -D_SCANF_FLOAT-o inverted_pendulum\main.o --omf_browse inverted_pendulum\main.crf --depend inverted_pendulum\main.d)
 I (../Core/Inc/main.h)(0x6A100E54)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x6A06EBE0)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A0FFFA4)
@@ -99,7 +99,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x6A06EBE0)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h)(0x6A06EBE0)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x6A06EBE0)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x6A06EBE0)
-F (../Core/Src/freertos.c)(0x6A27AA9E)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include-D__UVISION_VERSION="542" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -D_PRINTF_FLOAT -D_SCANF_FLOAT-o inverted_pendulum\freertos.o --omf_browse inverted_pendulum\freertos.crf --depend inverted_pendulum\freertos.d)
+F (../Core/Src/freertos.c)(0x6A2F9A52)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include-D__UVISION_VERSION="542" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -D_PRINTF_FLOAT -D_SCANF_FLOAT-o inverted_pendulum\freertos.o --omf_browse inverted_pendulum\freertos.crf --depend inverted_pendulum\freertos.d)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h)(0x6A06EB1A)
 I (F:\keil5\ARM\ARMCC\include\stddef.h)(0x5E8E3CC2)
 I (F:\keil5\ARM\ARMCC\include\stdint.h)(0x5E8E3CC2)
@@ -154,7 +154,7 @@ I (../Core/Inc/tim.h)(0x6A06EBEA)
 I (../Core/Inc/usart.h)(0x6A0FFFA4)
 I (F:\keil5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
 I (F:\keil5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
-I (../Core/Inc/angle_sensor.h)(0x6A27AA9E)
+I (../Core/Inc/angle_sensor.h)(0x6A2F9A52)
 I (../Core/Inc/adc.h)(0x6A0FFFA2)
 I (../Core/Inc/balance.h)(0x6A23D548)
 I (../Core/Inc/motor.h)(0x6A1E9241)
@@ -312,7 +312,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x6A06EBE0)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h)(0x6A06EBE0)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x6A06EBE0)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x6A06EBE0)
-F (../Core/Src/usart.c)(0x6A1E9241)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include-D__UVISION_VERSION="542" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -D_PRINTF_FLOAT -D_SCANF_FLOAT-o inverted_pendulum\usart.o --omf_browse inverted_pendulum\usart.crf --depend inverted_pendulum\usart.d)
+F (../Core/Src/usart.c)(0x6A2F9A52)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include-D__UVISION_VERSION="542" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -D_PRINTF_FLOAT -D_SCANF_FLOAT-o inverted_pendulum\usart.o --omf_browse inverted_pendulum\usart.crf --depend inverted_pendulum\usart.d)
 I (../Core/Inc/usart.h)(0x6A0FFFA4)
 I (../Core/Inc/main.h)(0x6A100E54)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x6A06EBE0)
@@ -350,7 +350,7 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x6A06EBE0)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h)(0x6A06EBE0)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x6A06EBE0)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x6A06EBE0)
-F (../Core/Src/stm32f4xx_it.c)(0x6A0FFFA4)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include-D__UVISION_VERSION="542" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -D_PRINTF_FLOAT -D_SCANF_FLOAT-o inverted_pendulum\stm32f4xx_it.o --omf_browse inverted_pendulum\stm32f4xx_it.crf --depend inverted_pendulum\stm32f4xx_it.d)
+F (../Core/Src/stm32f4xx_it.c)(0x6A2F9A52)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include-D__UVISION_VERSION="542" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -D_PRINTF_FLOAT -D_SCANF_FLOAT-o inverted_pendulum\stm32f4xx_it.o --omf_browse inverted_pendulum\stm32f4xx_it.crf --depend inverted_pendulum\stm32f4xx_it.d)
 I (../Core/Inc/main.h)(0x6A100E54)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x6A06EBE0)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A0FFFA4)
@@ -461,8 +461,8 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h)(0x6A06EBE0)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h)(0x6A06EBE0)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x6A06EBE0)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x6A06EBE0)
-F (..\Core\Src\angle_sensor.c)(0x6A1E9241)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include-D__UVISION_VERSION="542" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -D_PRINTF_FLOAT -D_SCANF_FLOAT-o inverted_pendulum\angle_sensor.o --omf_browse inverted_pendulum\angle_sensor.crf --depend inverted_pendulum\angle_sensor.d)
-I (../Core/Inc/angle_sensor.h)(0x6A27AA9E)
+F (..\Core\Src\angle_sensor.c)(0x6A2F9A52)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include-D__UVISION_VERSION="542" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -D_PRINTF_FLOAT -D_SCANF_FLOAT-o inverted_pendulum\angle_sensor.o --omf_browse inverted_pendulum\angle_sensor.crf --depend inverted_pendulum\angle_sensor.d)
+I (../Core/Inc/angle_sensor.h)(0x6A2F9A52)
 I (../Core/Inc/main.h)(0x6A100E54)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x6A06EBE0)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A0FFFA4)
@@ -514,7 +514,7 @@ I (../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h)(0x6A06EB1A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h)(0x6A06EB1A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h)(0x6A06EB1A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h)(0x6A06EB1A)
-F (..\Core\Src\balance.c)(0x6A27AA9E)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include-D__UVISION_VERSION="542" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -D_PRINTF_FLOAT -D_SCANF_FLOAT-o inverted_pendulum\balance.o --omf_browse inverted_pendulum\balance.crf --depend inverted_pendulum\balance.d)
+F (..\Core\Src\balance.c)(0x6A2FAD67)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include-D__UVISION_VERSION="542" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -D_PRINTF_FLOAT -D_SCANF_FLOAT-o inverted_pendulum\balance.o --omf_browse inverted_pendulum\balance.crf --depend inverted_pendulum\balance.d)
 I (../Core/Inc/balance.h)(0x6A23D548)
 I (../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h)(0x6A06EB1A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h)(0x6A06EB1A)
@@ -532,7 +532,7 @@ I (../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h)(0x6A06EB1A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h)(0x6A06EB1A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h)(0x6A06EB1A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h)(0x6A06EB1A)
-I (../Core/Inc/angle_sensor.h)(0x6A27AA9E)
+I (../Core/Inc/angle_sensor.h)(0x6A2F9A52)
 I (../Core/Inc/main.h)(0x6A100E54)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x6A06EBE0)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A0FFFA4)
@@ -571,7 +571,9 @@ I (../Core/Inc/adc.h)(0x6A0FFFA2)
 I (../Core/Inc/motor.h)(0x6A1E9241)
 I (../Core/Inc/tim.h)(0x6A06EBEA)
 I (../Core/Inc/led.h)(0x6A113D2C)
-F (..\Core\Src\motor.c)(0x6A27AA9E)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include-D__UVISION_VERSION="542" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -D_PRINTF_FLOAT -D_SCANF_FLOAT-o inverted_pendulum\motor.o --omf_browse inverted_pendulum\motor.crf --depend inverted_pendulum\motor.d)
+I (../Core/Inc/usart.h)(0x6A0FFFA4)
+I (F:\keil5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
+F (..\Core\Src\motor.c)(0x6A2F9A52)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include-D__UVISION_VERSION="542" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -D_PRINTF_FLOAT -D_SCANF_FLOAT-o inverted_pendulum\motor.o --omf_browse inverted_pendulum\motor.crf --depend inverted_pendulum\motor.d)
 I (../Core/Inc/motor.h)(0x6A1E9241)
 I (F:\keil5\ARM\ARMCC\include\stdint.h)(0x5E8E3CC2)
 I (../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h)(0x6A06EB1A)
@@ -626,9 +628,9 @@ I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h)(0x6A06EBE0)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h)(0x6A06EBE0)
 I (../Core/Inc/led.h)(0x6A113D2C)
 I (../Core/Inc/my_oled.h)(0x6A143B67)
-I (../Core/Inc/angle_sensor.h)(0x6A27AA9E)
+I (../Core/Inc/angle_sensor.h)(0x6A2F9A52)
 I (../Core/Inc/adc.h)(0x6A0FFFA2)
-F (..\Core\Src\my_oled.c)(0x6A2E6933)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include-D__UVISION_VERSION="542" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -D_PRINTF_FLOAT -D_SCANF_FLOAT-o inverted_pendulum\my_oled.o --omf_browse inverted_pendulum\my_oled.crf --depend inverted_pendulum\my_oled.d)
+F (..\Core\Src\my_oled.c)(0x6A2E6B1C)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include-D__UVISION_VERSION="542" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -D_PRINTF_FLOAT -D_SCANF_FLOAT-o inverted_pendulum\my_oled.o --omf_browse inverted_pendulum\my_oled.crf --depend inverted_pendulum\my_oled.d)
 I (../Core/Inc/main.h)(0x6A100E54)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x6A06EBE0)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A0FFFA4)
@@ -684,12 +686,12 @@ I (F:\keil5\ARM\ARMCC\include\stdio.h)(0x5E8E3CC2)
 I (F:\keil5\ARM\ARMCC\include\string.h)(0x5E8E3CC2)
 I (../Core/Inc/i2c.h)(0x6A12A8AB)
 I (../Core/Inc/oled.h)(0x6A1401EF)
-I (../Core/Inc/angle_sensor.h)(0x6A27AA9E)
+I (../Core/Inc/angle_sensor.h)(0x6A2F9A52)
 I (../Core/Inc/adc.h)(0x6A0FFFA2)
 I (../Core/Inc/motor.h)(0x6A1E9241)
 I (../Core/Inc/tim.h)(0x6A06EBEA)
 I (../Core/Inc/balance.h)(0x6A23D548)
-F (..\Core\Src\my_usart.c)(0x6A27AA9E)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include-D__UVISION_VERSION="542" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -D_PRINTF_FLOAT -D_SCANF_FLOAT-o inverted_pendulum\my_usart.o --omf_browse inverted_pendulum\my_usart.crf --depend inverted_pendulum\my_usart.d)
+F (..\Core\Src\my_usart.c)(0x6A2FAD6F)(--c99 -c --cpu Cortex-M4.fp.sp -D__MICROLIB -g -O3 --apcs=interwork --split_sections -I ../Core/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc -I ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy -I ../Middlewares/Third_Party/FreeRTOS/Source/include -I ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS -I ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F -I ../Drivers/CMSIS/Device/ST/STM32F4xx/Include -I ../Drivers/CMSIS/Include-I.\RTE\_Inverted_Pendulum-IF:\keil5\ARM\PACK\ARM\CMSIS\6.1.0\CMSIS\Core\Include-IF:\keil5\ARM\PACK\Keil\STM32F4xx_DFP\3.1.1\Device\Include-D__UVISION_VERSION="542" -DSTM32F407xx -D_RTE_ -DUSE_HAL_DRIVER -DSTM32F407xx -D_PRINTF_FLOAT -D_SCANF_FLOAT-o inverted_pendulum\my_usart.o --omf_browse inverted_pendulum\my_usart.crf --depend inverted_pendulum\my_usart.d)
 I (../Core/Inc/my_usart.h)(0x6A142D33)
 I (../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h)(0x6A06EB1A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h)(0x6A06EB1A)
@@ -707,7 +709,7 @@ I (../Middlewares/Third_Party/FreeRTOS/Source/include/timers.h)(0x6A06EB1A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h)(0x6A06EB1A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h)(0x6A06EB1A)
 I (../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h)(0x6A06EB1A)
-I (../Core/Inc/angle_sensor.h)(0x6A27AA9E)
+I (../Core/Inc/angle_sensor.h)(0x6A2F9A52)
 I (../Core/Inc/main.h)(0x6A100E54)
 I (../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h)(0x6A06EBE0)
 I (../Core/Inc/stm32f4xx_hal_conf.h)(0x6A0FFFA4)

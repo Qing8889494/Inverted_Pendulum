@@ -188,6 +188,10 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Alternate = GPIO_AF7_USART3;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+    /* USART3 NVIC interrupt configuration */
+    HAL_NVIC_SetPriority(USART3_IRQn, 6, 0);
+    HAL_NVIC_EnableIRQ(USART3_IRQn);
+
   /* USER CODE BEGIN USART3_MspInit 1 */
 
   /* USER CODE END USART3_MspInit 1 */
