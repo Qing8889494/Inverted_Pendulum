@@ -31,8 +31,18 @@
   #include "usart.h"
   #include <stdio.h>
 
+<<<<<<< HEAD
   #define CENTER_ANGLE        62.5
   #define CENTER_RANGE        40
+=======
+  #define CENTER_ANGLE        53.4
+  #define CENTER_RANGE        40
+	
+	#define FRICTION_COMP_LOW   60       // 中心以下的补偿力矩（阻尼大，需要更大）
+  #define FRICTION_DEADBAND_LOW   2.5f  // 中心以下的死区 (°)
+  #define FRICTION_COMP_HIGH  50       // 中心以上的补偿力矩（阻尼小，需要较小）
+  #define FRICTION_DEADBAND_HIGH  1.0f  // 中心以上的死区 (°)
+>>>>>>> 695c02af07585cf23c4245aee35c86b39009232f
 
   void PID_Update(PID_t *p)
   {
@@ -106,6 +116,7 @@
               continue;
           }
 
+<<<<<<< HEAD
           if (xQueuePeek(xMotorFeedbackQueue, &motor_local, pdMS_TO_TICKS(15)) == pdTRUE) {
 //              LED_Off(LED2_Pin);
           } else {
@@ -114,6 +125,14 @@
 			  osDelay(1);
               continue;
           }
+=======
+//          if (xQueuePeek(xMotorFeedbackQueue, &motor_local, pdMS_TO_TICKS(15)) == pdTRUE) {
+//              LED_Off(LED2_Pin);
+//          } else {
+//              LED_On(LED2_Pin);
+//              continue;
+//          }
+>>>>>>> 695c02af07585cf23c4245aee35c86b39009232f
 
           if (angle_local.angle2 < CENTER_ANGLE - CENTER_RANGE ||
               angle_local.angle2 > CENTER_ANGLE + CENTER_RANGE) {
@@ -123,7 +142,11 @@
               xQueueSend(xMotorCmdQueue, &motor_cmd, 0);
               LED_Off(LED1_Pin);
 								
+<<<<<<< HEAD
 				osDelay(1);
+=======
+							osDelay(1);
+>>>>>>> 695c02af07585cf23c4245aee35c86b39009232f
               continue;
           }
 
@@ -137,6 +160,16 @@
               AnglePID.Actual = angle_local.angle2;
               PID_Update(&AnglePID);
               motor_cmd.target_speed = (int16_t)AnglePID.Out;
+<<<<<<< HEAD
+=======
+						
+						 // 当角度误差超出死区、但 PID 输出太小时，补足到最小输出
+             float angle_err = AnglePID.Target - angle_local.angle2;
+              if (angle_err > FRICTION_DEADBAND_LOW)
+                  motor_cmd.target_speed += FRICTION_COMP_LOW;
+              else if (angle_err < -FRICTION_DEADBAND_HIGH)
+                  motor_cmd.target_speed -= FRICTION_COMP_HIGH;
+>>>>>>> 695c02af07585cf23c4245aee35c86b39009232f
 
               if(motor_cmd.target_speed == 0) {
                   LED_On(LED3_Pin);
