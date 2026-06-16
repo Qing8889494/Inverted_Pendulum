@@ -31,25 +31,20 @@
   #include "usart.h"
   #include <stdio.h>
 
-<<<<<<< HEAD
-  #define CENTER_ANGLE        62.5
-  #define CENTER_RANGE        40
-=======
-  #define CENTER_ANGLE        53.4
+  #define CENTER_ANGLE        57
   #define CENTER_RANGE        40
 	
-	#define FRICTION_COMP_LOW   60       // 中心以下的补偿力矩（阻尼大，需要更大）
-  #define FRICTION_DEADBAND_LOW   2.5f  // 中心以下的死区 (°)
-  #define FRICTION_COMP_HIGH  50       // 中心以上的补偿力矩（阻尼小，需要较小）
-  #define FRICTION_DEADBAND_HIGH  1.0f  // 中心以上的死区 (°)
->>>>>>> 695c02af07585cf23c4245aee35c86b39009232f
+	#define FRICTION_COMP_LOW   50       // 中心以下的补偿力矩（阻尼大，需要更大）
+  #define FRICTION_DEADBAND_LOW   5.0f  // 中心以下的死区 (°)
+  #define FRICTION_COMP_HIGH  40       // 中心以上的补偿力矩（阻尼小，需要较小）
+  #define FRICTION_DEADBAND_HIGH  2.0f  // 中心以上的死区 (°)
 
   void PID_Update(PID_t *p)
   {
       p->Error1 = p->Error0;
       p->Error0 = p->Target - p->Actual;
 
-      if (p->Ki > 0.001f || p->Ki < -0.001f)
+      if (p->Ki > 0.00001f || p->Ki < -0.00001f)
       {
           p->ErrorInt += p->Error0;
       }
@@ -78,17 +73,17 @@
       .Kp = 2.0f,
       .Ki = 0.0f,
       .Kd = 0.8f,
-      .OutMax = 1000,
-      .OutMin = -1000,
+      .OutMax = 450,
+      .OutMin = -450,
   };
 
   PID_t LocationPID = {
-      .Target = 180,
+      .Target = 0.0f,
       .Kp = 1.0f,
       .Ki = 0.02f,
       .Kd = 0.1f,
-      .OutMax = 60,
-      .OutMin = -60,
+      .OutMax = 40,
+      .OutMin = -40,
   };
 
   Sensor_Data_Typedef angle;
@@ -116,7 +111,7 @@
               continue;
           }
 
-<<<<<<< HEAD
+
           if (xQueuePeek(xMotorFeedbackQueue, &motor_local, pdMS_TO_TICKS(15)) == pdTRUE) {
 //              LED_Off(LED2_Pin);
           } else {
@@ -125,28 +120,23 @@
 			  osDelay(1);
               continue;
           }
-=======
-//          if (xQueuePeek(xMotorFeedbackQueue, &motor_local, pdMS_TO_TICKS(15)) == pdTRUE) {
-//              LED_Off(LED2_Pin);
-//          } else {
-//              LED_On(LED2_Pin);
-//              continue;
-//          }
->>>>>>> 695c02af07585cf23c4245aee35c86b39009232f
+
 
           if (angle_local.angle2 < CENTER_ANGLE - CENTER_RANGE ||
-              angle_local.angle2 > CENTER_ANGLE + CENTER_RANGE) {
+              angle_local.angle2 > CENTER_ANGLE + CENTER_RANGE //||
+//							motor_local.encoder_pos > 800 ||
+//							motor_local.encoder_pos < -800
+					) {
               RunState = 0;
               motor_cmd.target_speed = 0;
               g_last_motor_speed = 0;
+							AnglePID.ErrorInt	=0;
+							LocationPID.ErrorInt =0;
               xQueueSend(xMotorCmdQueue, &motor_cmd, 0);
               LED_Off(LED1_Pin);
 								
-<<<<<<< HEAD
 				osDelay(1);
-=======
 							osDelay(1);
->>>>>>> 695c02af07585cf23c4245aee35c86b39009232f
               continue;
           }
 
@@ -160,8 +150,7 @@
               AnglePID.Actual = angle_local.angle2;
               PID_Update(&AnglePID);
               motor_cmd.target_speed = (int16_t)AnglePID.Out;
-<<<<<<< HEAD
-=======
+
 						
 						 // 当角度误差超出死区、但 PID 输出太小时，补足到最小输出
              float angle_err = AnglePID.Target - angle_local.angle2;
@@ -169,7 +158,6 @@
                   motor_cmd.target_speed += FRICTION_COMP_LOW;
               else if (angle_err < -FRICTION_DEADBAND_HIGH)
                   motor_cmd.target_speed -= FRICTION_COMP_HIGH;
->>>>>>> 695c02af07585cf23c4245aee35c86b39009232f
 
               if(motor_cmd.target_speed == 0) {
                   LED_On(LED3_Pin);

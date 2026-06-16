@@ -218,12 +218,12 @@
 		 
 					//LED_On(LED2_Pin);
           ptr = tx_buf;
-          ptr += sprintf(ptr, "%.2f", angle_data.angle2);
+          ptr += sprintf(ptr, "%.2f", AnglePID.Target);
           *ptr++ = ',';
-          ptr += sprintf(ptr, "%.2f", sensor_data.angle_deg);
+          ptr += sprintf(ptr, "%d", sensor_data.encoder_pos);
           *ptr++ = ',';
 
-		  ptr += sprintf(ptr, "%d", 180
+		  ptr += sprintf(ptr, "%d", 0
 
 					);
           *ptr++ = '\r';

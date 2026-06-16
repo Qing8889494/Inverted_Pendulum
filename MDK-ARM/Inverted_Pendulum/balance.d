@@ -2,8 +2,8 @@ inverted_pendulum\balance.o: ..\Core\Src\balance.c
 inverted_pendulum\balance.o: ../Core/Inc/balance.h
 inverted_pendulum\balance.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 inverted_pendulum\balance.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/FreeRTOS.h
-inverted_pendulum\balance.o: F:\keil5\ARM\ARMCC\Bin\..\include\stddef.h
-inverted_pendulum\balance.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdint.h
+inverted_pendulum\balance.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
+inverted_pendulum\balance.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdint.h
 inverted_pendulum\balance.o: ../Core/Inc/FreeRTOSConfig.h
 inverted_pendulum\balance.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/projdefs.h
 inverted_pendulum\balance.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/portable.h
@@ -58,4 +58,4 @@ inverted_pendulum\balance.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RT
 inverted_pendulum\balance.o: ../Core/Inc/tim.h
 inverted_pendulum\balance.o: ../Core/Inc/led.h
 inverted_pendulum\balance.o: ../Core/Inc/usart.h
-inverted_pendulum\balance.o: F:\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+inverted_pendulum\balance.o: C:\Users\ASUS\AppData\Local\Keil_v5\ARM\ARMCC\Bin\..\include\stdio.h
