@@ -153,7 +153,7 @@
 
 						
 						 // 当角度误差超出死区、但 PID 输出太小时，补足到最小输出
-             float angle_err = AnglePID.Target - angle_local.angle2;
+             float angle_err = CENTER_ANGLE - angle_local.angle2;
               if (angle_err > FRICTION_DEADBAND_LOW)
                   motor_cmd.target_speed += FRICTION_COMP_LOW;
               else if (angle_err < -FRICTION_DEADBAND_HIGH)

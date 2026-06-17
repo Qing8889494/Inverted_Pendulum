@@ -3,7 +3,7 @@
 <title>Static Call Graph - [Inverted_Pendulum\Inverted_Pendulum.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image Inverted_Pendulum\Inverted_Pendulum.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Tue Jun 16 19:27:20 2026
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060960: Last Updated: Wed Jun 17 20:06:36 2026
 <BR><P>
 <H3>Maximum Stack Usage =        376 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -1651,8 +1651,8 @@ Global Symbols
 </UL>
 <BR>[Address Reference Count : 1]<UL><LI> freertos.o(.constdata)
 </UL>
-<P><STRONG><a name="[71]"></a>balance_f</STRONG> (Thumb, 312 bytes, Stack size 40 bytes, balance.o(i.balance_f))
-<BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = balance_f &rArr; xQueueGenericSend &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
+<P><STRONG><a name="[71]"></a>balance_f</STRONG> (Thumb, 312 bytes, Stack size 48 bytes, balance.o(i.balance_f))
+<BR><BR>[Stack]<UL><LI>Max Depth = 160<LI>Call Chain = balance_f &rArr; xQueueGenericSend &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[128]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;xQueuePeek
 <LI><a href="#[129]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;osDelay
@@ -1788,7 +1788,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[141]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;prvInitialiseNewTask
 </UL>
 
-<P><STRONG><a name="[6b]"></a>usart2_tx_f</STRONG> (Thumb, 134 bytes, Stack size 160 bytes, my_usart.o(i.usart2_tx_f))
+<P><STRONG><a name="[6b]"></a>usart2_tx_f</STRONG> (Thumb, 146 bytes, Stack size 160 bytes, my_usart.o(i.usart2_tx_f))
 <BR><BR>[Stack]<UL><LI>Max Depth = 264<LI>Call Chain = usart2_tx_f &rArr; xQueuePeek &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[f2]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;HAL_UART_Transmit

@@ -223,7 +223,7 @@
           ptr += sprintf(ptr, "%d", sensor_data.encoder_pos);
           *ptr++ = ',';
 
-		  ptr += sprintf(ptr, "%d", 0
+		  ptr += sprintf(ptr, "%.2f", angle_data.angle2
 
 					);
           *ptr++ = '\r';
